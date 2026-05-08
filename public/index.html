@@ -33,6 +33,29 @@
     <link rel="stylesheet" href="/css/main.css"/>
     <title>Brittni's Summer 2026 NFTs</title>
     <meta name="description" content="Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.">
+    <style>
+        #splash {
+            position: relative;
+        }
+
+        #splash .splash-overlay {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            text-align: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.25); /* optional: improves contrast */
+        }
+
+        h2 {
+            width: 90%;
+            border-bottom: var(--accent) solid 3px;
+        }
+    </style>
 </head>
 <body>
 <header>
@@ -58,11 +81,16 @@
         </div>
     </nav>
 </header>
-<main class="container my-3" style="min-height: 82vh;">
-    <section class="row mb-3 p-2 text-center" style="border-bottom: var(--accent) 2px solid">
+<div class="container-fluid m-0 p-0" id="splash" style="height: 100vh; object-fit: cover;">
+    <img style="height: 100%; width: 100%; max-width: 100vw; object-fit: cover" src="/images/splash.png" alt="Randomly placed pink, purple, red, and cyan circles with a slight transparency on a black background." />
+    <div class="splash-overlay">
         <h1>Brittni's Summer 2026 NFTs</h1>
-    </section>
-    <section class="row mb-3 justify-content-center" id="featured-project">
+        <p class="fs-4">Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.</p>
+    </div>
+</div>
+<main class="container my-3" style="min-height: 82vh;">
+    <section class="row">
+    <section class="col m-3 justify-content-center" id="featured-project">
         <section class="row mb-3 text-center">
             <h2>Featured Project</h2>
         </section>
@@ -84,7 +112,7 @@
             </section>
         </section>
     </section>
-    <section class="row mb-3 justify-content-center" id="about">
+    <section class="col m-3 justify-content-center" id="about">
         <section class="row mb-3 text-center">
             <h2>About Brittni</h2>
         </section>
@@ -96,6 +124,7 @@
                 Nam et pharetra lorem. Donec eget tempus arcu. Proin pulvinar feugiat sapien non feugiat. Morbi semper pharetra fringilla. Sed vitae velit id mi maximus consequat. Fusce blandit enim sit amet dolor facilisis vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin consequat, augue quis fermentum elementum, orci dolor tincidunt orci, sit amet ullamcorper ante ipsum et metus.
             </p>
         </section>
+    </section>
     </section>
 </main>
 <footer>
