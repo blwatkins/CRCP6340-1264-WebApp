@@ -17,7 +17,7 @@ This favicon was generated using the following graphics from Twitter Twemoji:
 ## License
 
 The source code of this project is licensed under the [MIT License](https://opensource.org/license/mit).
-The full text of the license is included with the package source code.
+The full text of the license is included with the project source code.
 
 ----
 
