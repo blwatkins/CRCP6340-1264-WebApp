@@ -1,0 +1,41 @@
+{
+  "name": "crcp6340-1264-webapp",
+  "license": "MIT",
+  "private": true,
+  "description": "Implementation of the web application project for CRCP 6340 - Creative Coding for Application Development; Summer 2026 term.",
+  "author": {
+    "name": "Brittni Watkins",
+    "url": "https://blwatkins.github.io/"
+  },
+  "homepage": "https://github.com/blwatkins/CRCP6340-1264-WebApp#readme",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blwatkins/CRCP6340-1264-WebApp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/blwatkins/CRCP6340-1264-WebApp/issues"
+  },
+  "type": "module",
+  "engines": {
+    "node": "^22.13.0 || >=24"
+  },
+  "scripts": {
+    "lint": "eslint -c eslint.config.server.mjs .",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/main.mjs",
+    "start": "node src/main.mjs"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "eslint": "^10.3.0",
+    "eslint-plugin-es-x": "^9.6.0",
+    "eslint-plugin-n": "^18.0.1",
+    "eslint-plugin-security": "^4.0.0",
+    "globals": "^17.6.0",
+    "nodemon": "^3.1.14"
+  }
+}
