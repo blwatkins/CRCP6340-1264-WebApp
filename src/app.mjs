@@ -19,18 +19,14 @@
  */
 
 import express from 'express';
-import path from 'path';
+
 
 import { rateLimit } from 'express-rate-limit';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const publicDir = path.join(__dirname, '../public');
+import { Constants } from './constants.mjs';
 
 const limiter = rateLimit({
-    windowMs: MILLIS_PER_SECOND * SECONDS_PER_MINUTE,
-    limit: 100,
+    windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
+    limit: Constants.requestsLimit,
     standardHeaders: 'draft-8',
     legacyHeaders: false,
     ipv6Subnet: 56
@@ -38,5 +34,8 @@ const limiter = rateLimit({
 
 export const app = express();
 
+app.disable('x-powered-by');
+
 app.use(limiter);
-app.use(express.static(publicDir));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.static(Constants.publicDir));
