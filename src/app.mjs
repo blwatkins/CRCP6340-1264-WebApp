@@ -20,12 +20,23 @@
 
 import express from 'express';
 import path from 'path';
+
+import { rateLimit } from 'express-rate-limit';
 import { fileURLToPath } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const publicDir = path.join(__dirname, '../public');
 
+const limiter = rateLimit({
+    windowMs: MILLIS_PER_SECOND * SECONDS_PER_MINUTE,
+    limit: 100,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    ipv6Subnet: 56
+});
+
 export const app = express();
 
+app.use(limiter);
 app.use(express.static(publicDir));
