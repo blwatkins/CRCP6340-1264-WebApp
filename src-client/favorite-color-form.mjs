@@ -18,8 +18,6 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO - add linting for src-client and src-shared
-
 import { StringUtility } from '../src-shared/string-utility.mjs';
 
 import { ClientConstants } from './constants.mjs';
