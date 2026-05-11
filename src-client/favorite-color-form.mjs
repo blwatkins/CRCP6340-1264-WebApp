@@ -329,7 +329,7 @@ export class FaveColorFormHandler {
      */
     async #submitForm() {
         let success = false;
-        let alertMessage = undefined;
+        let alertMessage;
         const requestBody = this.#buildRequestBody();
 
         if (!requestBody) {
@@ -351,10 +351,10 @@ export class FaveColorFormHandler {
                 try {
                     const data = await response.json();
                     alertMessage = data?.message;
-                } catch (error) {
+                } catch (_error) {
                     console.error('Could not parse JSON response.');
                 }
-            }).catch((error) => {
+            }).catch((_error) => {
                 alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
             });
         }
