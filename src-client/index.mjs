@@ -18,27 +18,11 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO - error handling routes
-// TODO - mail endpoint route
-// TODO - environment variable validation
+import { FaveColorFormHandler } from './favorite-color-form.mjs';
 
-import express from 'express';
-
-import { rateLimit } from 'express-rate-limit';
-import { Constants } from './constants.mjs';
-
-const limiter = rateLimit({
-    windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
-    limit: Constants.requestsLimit,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    ipv6Subnet: 56
-});
-
-export const app = express();
-
-app.disable('x-powered-by');
-
-app.use(limiter);
-app.use(express.json({ limit: '1mb' }));
-app.use(express.static(Constants.publicDir));
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById(FaveColorFormHandler.primaryElementId)) {
+        const handler = new FaveColorFormHandler();
+        handler.init();
+    }
+})

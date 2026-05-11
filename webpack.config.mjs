@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Brittni Watkins.
+ * Copyright (c) 2025-2026 Brittni Watkins.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -18,27 +18,25 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO - error handling routes
-// TODO - mail endpoint route
-// TODO - environment variable validation
+import path from 'path';
 
-import express from 'express';
+import { fileURLToPath } from 'url';
 
-import { rateLimit } from 'express-rate-limit';
-import { Constants } from './constants.mjs';
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-const limiter = rateLimit({
-    windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
-    limit: Constants.requestsLimit,
-    standardHeaders: 'draft-8',
-    legacyHeaders: false,
-    ipv6Subnet: 56
-});
-
-export const app = express();
-
-app.disable('x-powered-by');
-
-app.use(limiter);
-app.use(express.json({ limit: '1mb' }));
-app.use(express.static(Constants.publicDir));
+export default {
+    entry: {
+        bundle: './src-client/index.mjs'
+    },
+    output: {
+        path: path.resolve(__dirname, 'public/dist'),
+        filename: '[name].js',
+        clean: true
+    },
+    resolve: {
+        extensions: ['.js', '.cjs', '.mjs']
+    },
+    optimization: {
+        emitOnErrors: false
+    }
+};
