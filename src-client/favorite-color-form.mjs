@@ -18,9 +18,6 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO - submit HTTP request
-// TODO - display response for 5 seconds in form alert
-// TODO - clear form on success; re-enable form on failure
 // TODO - add linting for src-client and src-shared
 
 import { StringUtility } from '../src-shared/string-utility.mjs';
@@ -28,22 +25,92 @@ import { StringUtility } from '../src-shared/string-utility.mjs';
 import { ClientConstants } from './constants.mjs';
 
 export class FaveColorFormHandler {
+    /**
+     * @type {string}
+     */
     static #faveColorFormId = 'favorite-color-form';
+
+    /**
+     * @type {string}
+     */
     static #nameInputId = 'name-input';
+
+    /**
+     * @type {string}
+     */
     static #colorInputId = 'color-input';
+
+    /**
+     * @type {string}
+     */
     static #colorPreviewId = 'color-preview-div';
 
-    #faveColorForm;
-    #nameInput;
-    #colorInput;
-    #colorPreview;
+    /**
+     * @type {string}
+     */
+    static #formAlertDivId = 'form-alert-div';
 
+    /**
+     * @type {HTMLFormElement | undefined}
+     */
+    #faveColorForm;
+
+    /**
+     * @type {HTMLInputElement | undefined}
+     */
+    #nameInput;
+
+    /**
+     * @type {HTMLInputElement | undefined}
+     */
+    #colorInput;
+
+    /**
+     * @type {HTMLDivElement | undefined}
+     */
+    #colorPreviewDiv;
+
+    /**
+     * @type {HTMLDivElement | undefined}
+     */
+    #formAlertDiv;
+
+    /**
+     * The primary element ID for this handler.
+     * If this element is present, the handler can initialize and manage the form.
+     *
+     * @returns {string}
+     */
     static get primaryElementId() {
         return FaveColorFormHandler.#faveColorFormId;
     }
 
-    static get defaultBackgroundColor() {
+    /**
+     * @returns {string}
+     */
+    static get invalidBackgroundColor() {
         return '#00000000';
+    }
+
+    /**
+     * @returns {string}
+     */
+    static get defaultBackgroundColor() {
+        return '#000000';
+    }
+
+    /**
+     * @returns {string}
+     */
+    static get defaultFormSuccessAlert() {
+        return 'Form submitted successfully! Thank you!';
+    }
+
+    /**
+     * @returns {string}
+     */
+    static get defaultFormFailureAlert() {
+        return 'Error submitting form. Please try again later.';
     }
 
     init() {
@@ -52,50 +119,59 @@ export class FaveColorFormHandler {
 
     #decorateHTML() {
         this.#colorInput = document.getElementById(FaveColorFormHandler.#colorInputId);
-        this.#colorPreview = document.getElementById(FaveColorFormHandler.#colorPreviewId);
+        this.#colorPreviewDiv = document.getElementById(FaveColorFormHandler.#colorPreviewId);
         this.#nameInput = document.getElementById(FaveColorFormHandler.#nameInputId);
         this.#faveColorForm = document.getElementById(FaveColorFormHandler.#faveColorFormId);
-
-        if (this.#colorInput && this.#colorPreview) {
-            this.#colorInput.addEventListener('input', this.#updateColorPreview.bind(this), false);
-        }
-
-        if (this.#nameInput) {
-            this.#nameInput.addEventListener('change', this.#updateNameInput.bind(this), false);
-        }
+        this.#formAlertDiv = document.getElementById(FaveColorFormHandler.#formAlertDivId);
 
         if (this.#faveColorForm) {
             this.#faveColorForm.addEventListener('submit', async (event) => {
-               event.preventDefault();
-               event.stopPropagation();
+                event.preventDefault();
+                event.stopPropagation();
                 this.#faveColorForm.classList.remove(ClientConstants.bootstrapValidatedFormClass);
 
-               if (this.#faveColorForm.checkValidity() && this.#customFormValidation()) {
-                   this.#disableForm();
-               }
-
-               this.#faveColorForm.classList.add(ClientConstants.bootstrapValidatedFormClass);
+                if (this.#faveColorForm.checkValidity() && this.#customFormValidation()) {
+                    this.#faveColorForm.classList.add(ClientConstants.bootstrapValidatedFormClass);
+                    this.#disableForm();
+                    await this.#submitForm();
+                } else {
+                    this.#faveColorForm.classList.add(ClientConstants.bootstrapValidatedFormClass);
+                }
             }, false);
 
             this.#faveColorForm.addEventListener('input', () => {
-                this.#faveColorForm.classList.remove(ClientConstants.bootstrapValidatedFormClass);
-                this.#faveColorForm.checkValidity();
-                this.#customFormValidation()
-                this.#faveColorForm.classList.add(ClientConstants.bootstrapValidatedFormClass);
-            });
+                if (this.#colorInput && this.#colorPreviewDiv) {
+                    this.#updateColorPreview();
+                }
+
+                this.#validateForm();
+            }, false);
+
+            this.#faveColorForm.addEventListener('change', () => {
+                if (this.#nameInput) {
+                    this.#updateNameInput();
+                }
+
+                if (this.#colorInput && this.#colorPreviewDiv) {
+                    this.#updateColorPreview();
+                }
+
+                this.#validateForm();
+            }, false);
         }
     }
 
     #updateColorPreview() {
-        if (this.#colorInput && this.#colorPreview) {
+        if (this.#colorInput && this.#colorPreviewDiv) {
             const colorHex = this.#colorInput.value;
 
             if (StringUtility.isHexColorString(colorHex)) {
-                this.#colorPreview.style.backgroundColor = colorHex;
-            } else {
-                this.#colorPreview.style.backgroundColor = FaveColorFormHandler.defaultBackgroundColor;
+                this.#colorPreviewDiv.style.backgroundColor = colorHex;
+                return;
             }
         }
+
+        this.#colorPreviewDiv.style.backgroundColor = FaveColorFormHandler.invalidBackgroundColor;
     }
 
     #updateNameInput() {
@@ -105,6 +181,15 @@ export class FaveColorFormHandler {
             if (nameValue) {
                 this.#nameInput.value = nameValue.trim();
             }
+        }
+    }
+
+    #validateForm() {
+        if (this.#faveColorForm) {
+            this.#faveColorForm.classList.remove(ClientConstants.bootstrapValidatedFormClass);
+            this.#faveColorForm.checkValidity();
+            this.#customFormValidation();
+            this.#faveColorForm.classList.add(ClientConstants.bootstrapValidatedFormClass);
         }
     }
 
@@ -153,17 +238,106 @@ export class FaveColorFormHandler {
             this.#faveColorForm.reset();
             this.#faveColorForm.classList.remove(ClientConstants.bootstrapValidatedFormClass);
         }
+
+        if (this.#colorPreviewDiv) {
+            this.#colorPreviewDiv.style.backgroundColor = FaveColorFormHandler.defaultBackgroundColor;
+        }
     }
 
-    #formSuccessAlert() {
+    #formAlert(success, message) {
+        if (this.#formAlertDiv) {
+            this.#formAlertDiv.hidden = false;
 
+            if (success) {
+                this.#formSuccessAlert(message);
+            } else {
+                this.#formFailureAlert(message);
+            }
+        }
     }
 
-    #formFailureAlert() {
+    #formSuccessAlert(message) {
+        if (this.#formAlertDiv) {
+            this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertSuccessClass);
+            this.#formAlertDiv.innerText = message || FaveColorFormHandler.defaultFormSuccessAlert;
+        }
+    }
 
+    #formFailureAlert(message) {
+        if (this.#formAlertDiv) {
+            this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertDangerClass);
+            this.#formAlertDiv.innerText = message || FaveColorFormHandler.defaultFormFailureAlert;
+        }
     }
 
     #clearFormAlert() {
+        if (this.#formAlertDiv) {
+            this.#formAlertDiv.classList.remove(ClientConstants.bootstrapAlertSuccessClass);
+            this.#formAlertDiv.classList.remove(ClientConstants.bootstrapAlertDangerClass);
+            this.#formAlertDiv.innerText = '';
+            this.#formAlertDiv.hidden = true;
+        }
+    }
 
+    #buildRequestBody() {
+        if (this.#nameInput && this.#colorInput) {
+            // TODO - check for valid name and color in method
+
+            return {
+                name: this.#nameInput.value,
+                color: this.#colorInput.value,
+            }
+        }
+
+        return undefined;
+    }
+
+    async #submitForm() {
+        let success = false;
+        let alertMessage;
+        const requestBody = this.#buildRequestBody();
+
+        if (!requestBody) {
+            alertMessage = 'This form is not properly formatted to submit this request.';
+        } else {
+            try {
+                const response = await fetch('/api/favoriteColor', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(requestBody)
+                });
+
+                if (response) {
+                    if (response.ok) {
+                        success = true;
+                    }
+
+                    const data = await response.json();
+                    alertMessage = data?.message;
+                } else {
+                    alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
+                }
+            } catch (error) {
+                alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
+            }
+        }
+
+        this.#formAlert(success, alertMessage);
+
+        await new Promise((resolve) => {
+            setTimeout(() => {
+                resolve();
+            }, 3_000);
+        });
+
+        this.#clearFormAlert();
+
+        if (success) {
+            this.#resetForm();
+        }
+
+        this.#enableForm();
     }
 }

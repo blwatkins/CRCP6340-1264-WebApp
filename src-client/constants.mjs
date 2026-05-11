@@ -19,6 +19,14 @@
  */
 
 export class ClientConstants {
+    static get bootstrapAlertSuccessClass() {
+        return 'alert-success';
+    }
+
+    static get bootstrapAlertDangerClass() {
+        return 'alert-danger';
+    }
+
     static get bootstrapValidatedFormClass() {
         return 'was-validated';
     }

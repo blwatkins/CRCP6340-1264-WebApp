@@ -99,7 +99,7 @@
         </div>
         <div class="row align-items-center g-4 m-2">
             <div class="col-12 col-md-6">
-                <form id="favorite-color-form" class="needs-validation" novalidate>
+                <form id="favorite-color-form">
                     <div class="mb-3">
                         <label class="form-label"
                                for="name-input">Name</label>
@@ -121,11 +121,12 @@
                             Submit
                         </button>
                     </div>
+                    <div id="form-alert-div" class="mb-3 w-100 alert" role="alert" hidden></div>
                 </form>
             </div>
             <div class="col-12 col-md-6 d-flex justify-content-center">
                 <div id="color-preview-div"
-                     class="mx-auto rounded-4 color-preview"
+                     class="mx-auto rounded-4 color-preview border border-dark border-3"
                      style="background:black;" >
                     &nbsp;
                 </div>

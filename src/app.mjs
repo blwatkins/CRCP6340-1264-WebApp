@@ -21,6 +21,7 @@
 // TODO - error handling routes
 // TODO - mail endpoint route
 // TODO - environment variable validation
+// TODO - route logging
 
 import express from 'express';
 
@@ -42,3 +43,18 @@ app.disable('x-powered-by');
 app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
+
+app.post('/api/favoriteColor', (request, response) => {
+    const requestName = request.body?.name;
+    const requestColor = request.body?.color;
+
+    console.log(request.body);
+
+    if (requestName === 'fail-test') {
+        response.status(500).json({message: 'request error'});
+    } else if (requestName && requestColor) {
+        response.json({});
+    } else {
+        response.status(400).json({message: 'Bad request'});
+    }
+});
