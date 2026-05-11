@@ -19,19 +19,38 @@
  */
 
 export class ClientConstants {
+    /**
+     * @returns {string}
+     */
     static get bootstrapAlertSuccessClass() {
         return 'alert-success';
     }
 
+    /**
+     * @returns {string}
+     */
     static get bootstrapAlertDangerClass() {
         return 'alert-danger';
     }
 
+    /**
+     * @returns {string}
+     */
     static get bootstrapValidatedFormClass() {
         return 'was-validated';
     }
 
+    /**
+     * @returns {string}
+     */
     static get disableToggleClass() {
         return 'disable-toggle';
+    }
+
+    /**
+     * @return {number}
+     */
+    static get tempDisplayTimeoutMillis() {
+        return 3_000;
     }
 }

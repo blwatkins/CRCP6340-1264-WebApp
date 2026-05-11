@@ -167,11 +167,10 @@ export class FaveColorFormHandler {
 
             if (StringUtility.isHexColorString(colorHex)) {
                 this.#colorPreviewDiv.style.backgroundColor = colorHex;
-                return;
+            } else {
+                this.#colorPreviewDiv.style.backgroundColor = FaveColorFormHandler.invalidBackgroundColor;
             }
         }
-
-        this.#colorPreviewDiv.style.backgroundColor = FaveColorFormHandler.invalidBackgroundColor;
     }
 
     #updateNameInput() {
@@ -195,8 +194,8 @@ export class FaveColorFormHandler {
 
     #customFormValidation() {
         if (this.#nameInput && this.#colorInput) {
-            const isNameValid = StringUtility.isSingleLineTrimmedString(this.#nameInput.value);
-            const isColorValid = StringUtility.isHexColorString(this.#colorInput.value);
+            const isNameValid = this.#isValidNameInput();
+            const isColorValid = this.#isValidColorInput();
 
             this.#setValidation(this.#nameInput, isNameValid, 'Please enter a valid name.');
             this.#setValidation(this.#colorInput, isColorValid, 'Please enter a valid hex color (i.e. #RRGGBB).');
@@ -244,6 +243,10 @@ export class FaveColorFormHandler {
         }
     }
 
+    /**
+     * @param {boolean} success
+     * @param {string?} message
+     */
     #formAlert(success, message) {
         if (this.#formAlertDiv) {
             this.#formAlertDiv.hidden = false;
@@ -256,6 +259,9 @@ export class FaveColorFormHandler {
         }
     }
 
+    /**
+     * @param {string?} message
+     */
     #formSuccessAlert(message) {
         if (this.#formAlertDiv) {
             this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertSuccessClass);
@@ -263,6 +269,9 @@ export class FaveColorFormHandler {
         }
     }
 
+    /**
+     * @param {string?} message
+     */
     #formFailureAlert(message) {
         if (this.#formAlertDiv) {
             this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertDangerClass);
@@ -279,10 +288,33 @@ export class FaveColorFormHandler {
         }
     }
 
-    #buildRequestBody() {
-        if (this.#nameInput && this.#colorInput) {
-            // TODO - check for valid name and color in method
+    /**
+     * @returns {boolean}
+     */
+    #isValidNameInput() {
+        if (!this.#nameInput) {
+            return false;
+        }
 
+        return StringUtility.isSingleLineTrimmedString(this.#nameInput.value);
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    #isValidColorInput() {
+        if (!this.#colorInput) {
+            return false;
+        }
+
+        return StringUtility.isHexColorString(this.#colorInput.value);
+    }
+
+    /**
+     * @returns {{name: string, color: string} | undefined}
+     */
+    #buildRequestBody() {
+        if (this.#isValidNameInput() && this.#isValidColorInput()) {
             return {
                 name: this.#nameInput.value,
                 color: this.#colorInput.value,
@@ -292,36 +324,39 @@ export class FaveColorFormHandler {
         return undefined;
     }
 
+    /**
+     * @return {Promise<void>}
+     */
     async #submitForm() {
         let success = false;
-        let alertMessage;
+        let alertMessage = undefined;
         const requestBody = this.#buildRequestBody();
 
         if (!requestBody) {
-            alertMessage = 'This form is not properly formatted to submit this request.';
+            alertMessage = 'Form fields missing or invalid. Please check your input and try again.';
         } else {
-            try {
-                const response = await fetch('/api/favoriteColor', {
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    method: 'POST',
-                    body: JSON.stringify(requestBody)
-                });
+            await fetch('/api/favoriteColor', {
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST',
+                body: JSON.stringify(requestBody)
+            }).then(response => {
+                if (response.ok) {
+                    success = true;
+                }
 
-                if (response) {
-                    if (response.ok) {
-                        success = true;
-                    }
-
+                return response;
+            }).then(async (response) => {
+                try {
                     const data = await response.json();
                     alertMessage = data?.message;
-                } else {
-                    alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
+                } catch (error) {
+                    console.error('Could not parse JSON response.');
                 }
-            } catch (error) {
+            }).catch((error) => {
                 alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
-            }
+            });
         }
 
         this.#formAlert(success, alertMessage);
@@ -329,7 +364,7 @@ export class FaveColorFormHandler {
         await new Promise((resolve) => {
             setTimeout(() => {
                 resolve();
-            }, 3_000);
+            }, ClientConstants.tempDisplayTimeoutMillis);
         });
 
         this.#clearFormAlert();
