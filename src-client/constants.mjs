@@ -22,4 +22,8 @@ export class ClientConstants {
     static get bootstrapValidatedFormClass() {
         return 'was-validated';
     }
+
+    static get disableToggleClass() {
+        return 'disable-toggle';
+    }
 }

@@ -99,24 +99,24 @@
         </div>
         <div class="row align-items-center g-4 m-2">
             <div class="col-12 col-md-6">
-                <form id="favorite-color-form">
+                <form id="favorite-color-form" class="needs-validation" novalidate>
                     <div class="mb-3">
                         <label class="form-label"
                                for="name-input">Name</label>
                         <input id="name-input"
-                               class="form-control"
+                               class="form-control disable-toggle"
                                type="text" name="name" placeholder="John Doe" required/>
                     </div>
                     <div class="mb-3">
                         <label class="form-label"
                                for="color-input">Favorite Color</label>
                         <input id="color-input"
-                               class="form-control"
-                               type="text" name="color"  placeholder="#000000" required />
+                               class="form-control disable-toggle"
+                               type="text" name="color" maxlength="7" placeholder="#000000" required />
                     </div>
                     <div class="mb-3">
                         <button id="submit-button"
-                                class="btn btn-success w-100"
+                                class="btn btn-success w-100 disable-toggle"
                                 type="submit">
                             Submit
                         </button>
