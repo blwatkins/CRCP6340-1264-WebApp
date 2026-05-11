@@ -1,4 +1,4 @@
-name: npm Lint
+name: npm Lint and Build
 
 on:
   workflow_dispatch:
@@ -29,4 +29,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
       - run: npm ci
-      - run: npm run lint
+      - run: npm run lint:all
+      - run: npm run build:check

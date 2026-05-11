@@ -317,8 +317,8 @@ export class FaveColorFormHandler {
         if (this.#isValidNameInput() && this.#isValidColorInput()) {
             return {
                 name: this.#nameInput.value,
-                color: this.#colorInput.value,
-            }
+                color: this.#colorInput.value
+            };
         }
 
         return undefined;
@@ -341,7 +341,7 @@ export class FaveColorFormHandler {
                 },
                 method: 'POST',
                 body: JSON.stringify(requestBody)
-            }).then(response => {
+            }).then((response) => {
                 if (response.ok) {
                     success = true;
                 }
@@ -351,10 +351,10 @@ export class FaveColorFormHandler {
                 try {
                     const data = await response.json();
                     alertMessage = data?.message;
-                } catch (_error) {
+                } catch {
                     console.error('Could not parse JSON response.');
                 }
-            }).catch((_error) => {
+            }).catch(() => {
                 alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
             });
         }

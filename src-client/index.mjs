@@ -25,4 +25,4 @@ document.addEventListener('DOMContentLoaded', () => {
         const handler = new FaveColorFormHandler();
         handler.init();
     }
-})
+});
