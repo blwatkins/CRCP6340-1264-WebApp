@@ -19,9 +19,27 @@
  */
 
 import nodemailer from 'nodemailer';
+
 import { StringUtility } from '../src-shared/string-utility.mjs';
 
 export class MailClient {
+    /**
+     * @returns {number}
+     */
+    static get maxSubjectLength() {
+        return 256;
+    }
+
+    /**
+     * @returns {number}
+     */
+    static get maxTextLength() {
+        return 1024;
+    }
+
+    /**
+     * @returns {boolean}
+     */
     static hasValidConfiguration() {
         const stringVars = [
             process.env.MAIL_SENDER_EMAIL,
@@ -42,15 +60,21 @@ export class MailClient {
         return isValid;
     }
 
+    /**
+     * @returns {Promise<void>}
+     */
     static async init() {
         try {
-            await transporter.verify();
+            await transport.verify();
             console.debug('MailClient initialized and validated.');
         } catch {
             console.error('MailClient initialization failed. Please check your app configuration and ensure the mail server is reachable.');
         }
     }
 
+    /**
+     * @returns {{pool: boolean, service: string, auth: {user: string, pass: string}}}
+     */
     static buildTransportConfig() {
         return {
             pool: true,
@@ -61,12 +85,83 @@ export class MailClient {
             }
         };
     }
+
+    /**
+     * @param {string} subject
+     * @param {string} text
+     * @return {Promise<{status: number, message: string}>}
+     */
+    static async sendMail(subject, text) {
+        if (!transport) {
+            throw new Error('Unable to send mail. Missing required transport.');
+        }
+
+        const messageSubject = MailClient.#sanitizeSubject(subject);
+        const messageText = MailClient.#sanitizeText(text);
+
+        if (!messageSubject || !messageText) {
+            return {
+                status: 400,
+                message: 'Bad Request: Message subject or text is missing or not properly formatted.'
+            }
+        }
+
+        const message = {
+            from: process.env.MAIL_SENDER_EMAIL,
+            to: process.env.MAIL_RECIPIENT_EMAIL,
+            subject: 'TODO',
+            text: 'TODO'
+        }
+
+        await transport.sendMail(message);
+
+        return {
+            status: 200,
+            message: 'Message sent successfully!'
+        }
+    }
+
+    /**
+     * @param {unknown} input
+     * @return {string|undefined}
+     */
+    static #sanitizeSubject(input) {
+        if (!StringUtility.isNonEmptyString(input)) {
+            return undefined;
+        }
+
+        if (!StringUtility.isSingleLineTrimmedString(input.trim())) {
+            return undefined;
+        }
+
+        if (input.trim().length > MailClient.maxSubjectLength) {
+            return undefined;
+        }
+
+        return input.trim();
+    }
+
+    /**
+     * @param {unknown} input
+     * @return {string|undefined}
+     */
+    static #sanitizeText(input) {
+        if (!StringUtility.isNonEmptyString(input)) {
+            return undefined;
+        }
+
+        if (input.trim().length > MailClient.maxTextLength) {
+            return undefined;
+        }
+
+        return input.trim();
+    }
 }
 
-let transporter;
+let transport;
 
 if (MailClient.hasValidConfiguration()) {
-    transporter = nodemailer.createTransport(MailClient.buildTransportConfig());
+    transport = nodemailer.createTransport(MailClient.buildTransportConfig());
 } else {
-    console.warn('Invalid app configuration for MailClient. Please ensure all required environment variables are set and non-empty.');
+    console.error('Invalid app configuration for MailClient. Please ensure all required environment variables are set and non-empty.');
 }
