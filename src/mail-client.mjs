@@ -37,6 +37,15 @@ export class MailClient {
         return 1024;
     }
 
+    static get appConfigErrorMessage() {
+        return 'Invalid app configuration for MailClient. ' +
+            'Please ensure all required environment variables are present and valid.';
+    }
+
+    static get transportNotDefinedErrorMessage() {
+        return 'MailClient transport is not defined.';
+    }
+
     /**
      * @returns {boolean}
      */
@@ -64,36 +73,47 @@ export class MailClient {
      * @returns {Promise<void>}
      */
     static async init() {
+        if (!transport) {
+            console.error(MailClient.transportNotDefinedErrorMessage);
+            return;
+        }
+
         try {
             await transport.verify();
             console.debug('MailClient initialized and validated.');
         } catch {
-            console.error('MailClient initialization failed. Please check your app configuration and ensure the mail server is reachable.');
+            console.error('MailClient initialization failed. ' +
+                'Please check your app configuration and ensure the mail server is reachable.');
         }
     }
 
     /**
-     * @returns {{pool: boolean, service: string, auth: {user: string, pass: string}}}
+     * @returns {{pool: boolean, service: string, auth: {user: string, pass: string}}|undefined}
      */
     static buildTransportConfig() {
-        return {
-            pool: true,
-            service: StringUtility.trimString(process.env.MAIL_SENDER_SERVICE),
-            auth: {
-                user: StringUtility.trimString(process.env.MAIL_SENDER_EMAIL),
-                pass: StringUtility.trimString(process.env.MAIL_SENDER_PASSWORD)
-            }
-        };
+        try {
+            return {
+                pool: true,
+                service: StringUtility.trimString(process.env.MAIL_SENDER_SERVICE),
+                auth: {
+                    user: StringUtility.trimString(process.env.MAIL_SENDER_EMAIL),
+                    pass: StringUtility.trimString(process.env.MAIL_SENDER_PASSWORD)
+                }
+            };
+        } catch {
+            return undefined;
+        }
     }
 
     /**
      * @param {string} subject
      * @param {string} text
      * @return {Promise<{status: number, message: string}>}
+     * @throws {Error} If MailClient transport is not properly initialized.
      */
     static async sendMail(subject, text) {
         if (!transport) {
-            throw new Error('Unable to send mail. Missing required transport.');
+            throw new Error(`Unable to send mail. ${MailClient.transportNotDefinedErrorMessage}`);
         }
 
         const messageSubject = MailClient.#sanitizeSubject(subject);
@@ -109,11 +129,22 @@ export class MailClient {
         const message = {
             from: process.env.MAIL_SENDER_EMAIL,
             to: process.env.MAIL_RECIPIENT_EMAIL,
-            subject: 'TODO',
-            text: 'TODO'
+            subject: messageSubject,
+            text: messageText
         }
 
-        await transport.sendMail(message);
+        try {
+            await transport.sendMail(message);
+        } catch (error) {
+            let errorMessage = 'MailClient.sendMail Error';
+            if (error instanceof Error) errorMessage = `${errorMessage}: ${error.message}`;
+            console.error(errorMessage);
+
+            return {
+                status: 500,
+                message: 'Message failed to send. Please try again later.'
+            }
+        }
 
         return {
             status: 200,
@@ -130,15 +161,17 @@ export class MailClient {
             return undefined;
         }
 
-        if (!StringUtility.isSingleLineTrimmedString(input.trim())) {
+        const trimmedInput = input.trim();
+
+        if (!StringUtility.isSingleLineTrimmedString(trimmedInput)) {
             return undefined;
         }
 
-        if (input.trim().length > MailClient.maxSubjectLength) {
+        if (trimmedInput.length > MailClient.maxSubjectLength) {
             return undefined;
         }
 
-        return input.trim();
+        return trimmedInput;
     }
 
     /**
@@ -150,18 +183,26 @@ export class MailClient {
             return undefined;
         }
 
-        if (input.trim().length > MailClient.maxTextLength) {
+        const trimmedInput = input.trim();
+
+        if (trimmedInput.length > MailClient.maxTextLength) {
             return undefined;
         }
 
-        return input.trim();
+        return trimmedInput;
     }
 }
 
 let transport;
 
 if (MailClient.hasValidConfiguration()) {
-    transport = nodemailer.createTransport(MailClient.buildTransportConfig());
-} else {
-    console.error('Invalid app configuration for MailClient. Please ensure all required environment variables are set and non-empty.');
+    const transportConfig = MailClient.buildTransportConfig();
+
+    if (transportConfig) {
+        transport = nodemailer.createTransport(transportConfig);
+    }
+}
+
+if (!transport) {
+    console.error(MailClient.appConfigErrorMessage);
 }
