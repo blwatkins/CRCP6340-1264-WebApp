@@ -134,14 +134,14 @@ export class MailClient {
             };
         }
 
-        const message = {
-            from: process.env.MAIL_SENDER_EMAIL,
-            to: process.env.MAIL_RECIPIENT_EMAIL,
-            subject: messageSubject,
-            text: messageText
-        };
-
         try {
+            const message = {
+                from: StringUtility.trimString(process.env.MAIL_SENDER_EMAIL),
+                to: StringUtility.trimString(process.env.MAIL_RECIPIENT_EMAIL),
+                subject: messageSubject,
+                text: messageText
+            };
+
             await transport.sendMail(message);
         } catch (error) {
             console.error(ErrorUtility.buildErrorMessage('MailClient.sendMail Error', error));

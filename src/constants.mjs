@@ -24,7 +24,7 @@ import { fileURLToPath } from 'url';
 
 export class Constants {
     /**
-     * {string}
+     * @type {string}
      */
     static #publicDir;
 

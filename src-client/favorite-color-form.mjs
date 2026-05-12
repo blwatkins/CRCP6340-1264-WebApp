@@ -243,7 +243,7 @@ export class FaveColorFormHandler {
 
     /**
      * @param {boolean} success
-     * @param {string?} message
+     * @param {string|null|undefined} message
      */
     #formAlert(success, message) {
         if (this.#formAlertDiv) {
@@ -258,7 +258,7 @@ export class FaveColorFormHandler {
     }
 
     /**
-     * @param {string?} message
+     * @param {string|null|undefined} message
      */
     #formSuccessAlert(message) {
         if (this.#formAlertDiv) {
@@ -268,7 +268,7 @@ export class FaveColorFormHandler {
     }
 
     /**
-     * @param {string?} message
+     * @param {string|null|undefined} message
      */
     #formFailureAlert(message) {
         if (this.#formAlertDiv) {

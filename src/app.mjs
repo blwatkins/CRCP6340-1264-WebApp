@@ -47,11 +47,10 @@ app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 
-try {
-    await MailClient.init();
-} catch (error) {
-    console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
-}
+MailClient.init()
+    .catch((error) => {
+        console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
+    });
 
 app.post('/api/favoriteColor', async (request, response) => {
     if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
