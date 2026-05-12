@@ -40,6 +40,51 @@ html {
     box-sizing: border-box;
 }
 
-*, *:before, *:after {
+*, *::before, *::after {
     box-sizing: inherit;
+}
+
+#splash {
+    position: relative;
+    height: 100dvh;
+    min-height: 100vh;
+}
+
+#splash img {
+    display: block;
+    height: 100%;
+    width: 100%;
+    max-width: 100vw;
+    object-fit: cover;
+}
+
+#splash .splash-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.25); /* optional: improves contrast */
+}
+
+.heading {
+    border-bottom: var(--accent) solid 3px;
+}
+
+.color-preview {
+    width: min(20rem, 85%);
+    aspect-ratio: 1 / 1;
+}
+
+.project-card {
+    width: 20rem;
+}
+
+.project-card-top {
+    height: 20rem;
+    background-color: var(--accent);
 }

@@ -18,14 +18,87 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import express from 'express';
-import path from 'path';
-import { fileURLToPath } from 'url';
+// TODO - route logging
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const publicDir = path.join(__dirname, '../public');
+import express from 'express';
+
+import { rateLimit } from 'express-rate-limit';
+
+import { StringUtility } from '../src-shared/string-utility.mjs';
+import { ErrorUtility } from '../src-shared/error-utility.mjs';
+
+import { Constants } from './constants.mjs';
+import { MailClient } from './mail-client.mjs';
+
+const limiter = rateLimit({
+    windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
+    limit: Constants.requestsLimit,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    ipv6Subnet: 56
+});
 
 export const app = express();
 
-app.use(express.static(publicDir));
+app.disable('x-powered-by');
+
+app.use(limiter);
+app.use(express.json({ limit: '1mb' }));
+app.use(express.static(Constants.publicDir));
+
+MailClient.init()
+    .catch((error) => {
+        console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
+    });
+
+app.post('/api/favoriteColor', async (request, response) => {
+    if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
+        response.status(400).json({ message: 'Bad Request: Request body is missing or not properly formatted.' });
+        return;
+    }
+
+    const requestName = request.body.name;
+    const requestColor = request.body.color;
+
+    if (!StringUtility.isSingleLineTrimmedString(requestName) || !StringUtility.isHexColorString(requestColor)) {
+        response.status(400).json({ message: 'Bad Request: Required parameters are missing or not properly formatted.' });
+        return;
+    }
+
+    try {
+        const subject = `\u{2757} \u{1F310} ${requestName} has sent you their favorite color! \u{1F3A8}`;
+        const text = `Name: ${requestName}\nFavorite Color: ${requestColor}`;
+        const result = await MailClient.sendMail(subject, text);
+
+        if (typeof result.status === 'number' && result.status >= 100 && result.status < 600 && StringUtility.isSingleLineTrimmedString(result.message)) {
+            response.status(result.status).json({ message: result.message });
+        } else {
+            response.status(500).json({ message: 'Internal Server Error.' });
+        }
+    } catch (error) {
+        console.error(ErrorUtility.buildErrorMessage('Request Error', error));
+        response.status(500).json({ message: 'Internal Server Error: Message failed to send.' });
+    }
+});
+
+const isApiRequest = request => request.path === '/api' || request.path.startsWith('/api/');
+
+app.use((error, request, response, _next) => {
+    console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
+
+    if (isApiRequest(request)) {
+        response.status(500).json({ message: 'Internal Server Error.' });
+        return;
+    }
+
+    response.status(500).send('Internal Server Error.');
+});
+
+app.use((request, response) => {
+    if (isApiRequest(request)) {
+        response.status(404).json({ message: 'Not Found.' });
+        return;
+    }
+
+    response.status(404).send('Error 404: Page Not Found.');
+});

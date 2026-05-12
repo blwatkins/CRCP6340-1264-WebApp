@@ -20,13 +20,23 @@
     "node": "^22.13.0 || >=24"
   },
   "scripts": {
-    "lint": "eslint -c eslint.config.server.mjs .",
+    "lint:client": "eslint -c eslint.config.client.mjs ./src-client",
+    "lint:server": "eslint -c eslint.config.server.mjs .",
+    "lint:all": "npm run lint:client && npm run lint:server",
+    "build": "webpack --mode production",
+    "build:watch": "webpack --mode production --watch",
+    "build:dev": "webpack --mode development",
+    "build:dev:watch": "webpack --mode development --watch",
+    "build:check": "npm run build:dev && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/main.mjs",
-    "start": "node src/main.mjs"
+    "dev": "dotenvx run -f .env.dev -- nodemon src/main.mjs",
+    "start": "dotenvx run -f .env.prod -- node src/main.mjs"
   },
   "dependencies": {
-    "express": "^5.2.1"
+    "@dotenvx/dotenvx": "^1.65.0",
+    "express": "^5.2.1",
+    "express-rate-limit": "^8.5.1",
+    "nodemailer": "^8.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -36,6 +46,8 @@
     "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.6.0",
-    "nodemon": "^3.1.14"
+    "nodemon": "^3.1.14",
+    "webpack": "^5.106.2",
+    "webpack-cli": "^7.0.2"
   }
 }

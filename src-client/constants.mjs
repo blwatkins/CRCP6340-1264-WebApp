@@ -18,61 +18,39 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import path from 'path';
-
-import { fileURLToPath } from 'url';
-
-export class Constants {
+export class ClientConstants {
     /**
-     * @type {string}
+     * @returns {string}
      */
-    static #publicDir;
-
-    static {
-        Constants.#setPublicDir();
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get millisPerSecond() {
-        return 1_000;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get secondsPerMinute() {
-        return 60;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get port() {
-        return 3000;
+    static get bootstrapAlertSuccessClass() {
+        return 'alert-success';
     }
 
     /**
      * @returns {string}
      */
-    static get publicDir() {
-        return Constants.#publicDir;
+    static get bootstrapAlertDangerClass() {
+        return 'alert-danger';
     }
 
     /**
-     * @returns {number}
+     * @returns {string}
      */
-    static get requestsLimit() {
-        return 100;
+    static get bootstrapValidatedFormClass() {
+        return 'was-validated';
     }
 
     /**
-     * @returns {void}
+     * @returns {string}
      */
-    static #setPublicDir() {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        Constants.#publicDir = path.join(__dirname, '../public');
+    static get disableToggleClass() {
+        return 'disable-toggle';
+    }
+
+    /**
+     * @return {number}
+     */
+    static get tempDisplayTimeoutMillis() {
+        return 3_000;
     }
 }

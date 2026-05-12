@@ -18,61 +18,11 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import path from 'path';
+import { FaveColorFormHandler } from './favorite-color-form.mjs';
 
-import { fileURLToPath } from 'url';
-
-export class Constants {
-    /**
-     * @type {string}
-     */
-    static #publicDir;
-
-    static {
-        Constants.#setPublicDir();
+document.addEventListener('DOMContentLoaded', () => {
+    if (document.getElementById(FaveColorFormHandler.primaryElementId)) {
+        const handler = new FaveColorFormHandler();
+        handler.init();
     }
-
-    /**
-     * @returns {number}
-     */
-    static get millisPerSecond() {
-        return 1_000;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get secondsPerMinute() {
-        return 60;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get port() {
-        return 3000;
-    }
-
-    /**
-     * @returns {string}
-     */
-    static get publicDir() {
-        return Constants.#publicDir;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get requestsLimit() {
-        return 100;
-    }
-
-    /**
-     * @returns {void}
-     */
-    static #setPublicDir() {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        Constants.#publicDir = path.join(__dirname, '../public');
-    }
-}
+});

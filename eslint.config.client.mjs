@@ -18,21 +18,18 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-/* This configuration is designed to lint all server-based JavaScript files in the project. */
+/* This configuration is designed to lint all client-based JavaScript files in the project. */
 
 import eslint from '@eslint/js';
 import stylistic from '@stylistic/eslint-plugin';
 import esX from 'eslint-plugin-es-x';
-import node from 'eslint-plugin-n';
-import security from 'eslint-plugin-security';
 import globals from 'globals';
 
 import { defineConfig, globalIgnores } from 'eslint/config';
 
 export default defineConfig([
     globalIgnores([
-        'public/**',
-        'src-client/**'
+        'src/**'
     ]),
     {
         files: [
@@ -43,22 +40,18 @@ export default defineConfig([
         ],
         plugins: {
             'es-x': esX,
-            'n': node,
-            'security': security,
             '@stylistic': stylistic
         },
         extends: [
             eslint.configs.recommended,
             'es-x/flat/restrict-to-es2022',
-            'n/flat/recommended',
-            'security/recommended',
             '@stylistic/recommended'
         ],
         languageOptions: {
             ecmaVersion: 2022,
             sourceType: 'module',
             globals: {
-                ...globals.node
+                ...globals.browser
             }
         },
         rules: {
@@ -100,10 +93,6 @@ export default defineConfig([
 
             'no-unsafe-optional-chaining': ['error', {
                 disallowArithmeticOperators: true
-            }],
-
-            'no-unused-vars': ['error', {
-                argsIgnorePattern: '^_'
             }],
 
             'no-useless-assignment': 'error',
@@ -171,23 +160,7 @@ export default defineConfig([
                 }
             ],
 
-            '@stylistic/semi': ['error', 'always'],
-
-            /* eslint-plugin-n */
-
-            'n/no-extraneous-import': 'error',
-
-            'n/no-missing-import': 'error',
-
-            'n/no-unsupported-features/es-syntax': ['error', {
-                version: '>=20.19.0',
-                ignores: []
-            }],
-
-            'n/no-unsupported-features/node-builtins': ['error', {
-                version: '>=20.19.0',
-                ignores: []
-            }]
+            '@stylistic/semi': ['error', 'always']
         }
     }
 ]);

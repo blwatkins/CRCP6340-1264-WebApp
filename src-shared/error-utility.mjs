@@ -18,61 +18,39 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import path from 'path';
+import { StringUtility } from './string-utility.mjs';
 
-import { fileURLToPath } from 'url';
-
-export class Constants {
+export class ErrorUtility {
     /**
-     * @type {string}
+     * @throws {Error} - ErrorUtility is a static class and cannot be instantiated.
      */
-    static #publicDir;
-
-    static {
-        Constants.#setPublicDir();
+    constructor() {
+        throw new Error('ErrorUtility is a static class and cannot be instantiated.');
     }
 
     /**
-     * @returns {number}
+     * Builds a comprehensive error message by combining a custom message with details from an error object or string.
+     * @param {string|null|undefined} message
+     * @param {Error|string|null|undefined} error
+     * @return {string}
      */
-    static get millisPerSecond() {
-        return 1_000;
-    }
+    static buildErrorMessage(message, error) {
+        const parts = [];
 
-    /**
-     * @returns {number}
-     */
-    static get secondsPerMinute() {
-        return 60;
-    }
+        if (StringUtility.isNonEmptyString(message)) {
+            parts.push(message);
+        }
 
-    /**
-     * @returns {number}
-     */
-    static get port() {
-        return 3000;
-    }
+        if (error instanceof Error && StringUtility.isNonEmptyString(error.message)) {
+            parts.push(error.message);
+        } else if (StringUtility.isNonEmptyString(error)) {
+            parts.push(error);
+        }
 
-    /**
-     * @returns {string}
-     */
-    static get publicDir() {
-        return Constants.#publicDir;
-    }
+        if (parts.length > 0) {
+            return parts.join(': ');
+        }
 
-    /**
-     * @returns {number}
-     */
-    static get requestsLimit() {
-        return 100;
-    }
-
-    /**
-     * @returns {void}
-     */
-    static #setPublicDir() {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        Constants.#publicDir = path.join(__dirname, '../public');
+        return 'Error.';
     }
 }

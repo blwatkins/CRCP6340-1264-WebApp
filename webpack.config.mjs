@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2026 Brittni Watkins.
+ * Copyright (c) 2025-2026 Brittni Watkins.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"),
@@ -22,57 +22,21 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 
-export class Constants {
-    /**
-     * @type {string}
-     */
-    static #publicDir;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-    static {
-        Constants.#setPublicDir();
+export default {
+    entry: {
+        bundle: './src-client/index.mjs'
+    },
+    output: {
+        path: path.resolve(__dirname, 'public/dist'),
+        filename: '[name].js',
+        clean: true
+    },
+    resolve: {
+        extensions: ['.js', '.cjs', '.mjs']
+    },
+    optimization: {
+        emitOnErrors: false
     }
-
-    /**
-     * @returns {number}
-     */
-    static get millisPerSecond() {
-        return 1_000;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get secondsPerMinute() {
-        return 60;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get port() {
-        return 3000;
-    }
-
-    /**
-     * @returns {string}
-     */
-    static get publicDir() {
-        return Constants.#publicDir;
-    }
-
-    /**
-     * @returns {number}
-     */
-    static get requestsLimit() {
-        return 100;
-    }
-
-    /**
-     * @returns {void}
-     */
-    static #setPublicDir() {
-        const __filename = fileURLToPath(import.meta.url);
-        const __dirname = path.dirname(__filename);
-        Constants.#publicDir = path.join(__dirname, '../public');
-    }
-}
+};
