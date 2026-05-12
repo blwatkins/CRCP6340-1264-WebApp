@@ -49,29 +49,29 @@ export class FaveColorFormHandler {
     static #formAlertDivId = 'form-alert-div';
 
     /**
-     * @type {HTMLFormElement | undefined}
+     * @type {HTMLFormElement | null}
      */
-    #faveColorForm;
+    #faveColorForm = null;
 
     /**
-     * @type {HTMLInputElement | undefined}
+     * @type {HTMLInputElement | null}
      */
-    #nameInput;
+    #nameInput = null;
 
     /**
-     * @type {HTMLInputElement | undefined}
+     * @type {HTMLInputElement | null}
      */
-    #colorInput;
+    #colorInput = null;
 
     /**
-     * @type {HTMLDivElement | undefined}
+     * @type {HTMLDivElement | null}
      */
-    #colorPreviewDiv;
+    #colorPreviewDiv = null;
 
     /**
-     * @type {HTMLDivElement | undefined}
+     * @type {HTMLDivElement | null}
      */
-    #formAlertDiv;
+    #formAlertDiv = null;
 
     /**
      * The primary element ID for this handler.
