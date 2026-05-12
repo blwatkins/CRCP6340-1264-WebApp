@@ -262,6 +262,7 @@ export class FaveColorFormHandler {
      */
     #formSuccessAlert(message) {
         if (this.#formAlertDiv) {
+            this.#formAlertDiv.classList.remove(ClientConstants.bootstrapAlertDangerClass);
             this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertSuccessClass);
             this.#formAlertDiv.innerText = message || FaveColorFormHandler.defaultFormSuccessAlert;
         }
@@ -272,6 +273,7 @@ export class FaveColorFormHandler {
      */
     #formFailureAlert(message) {
         if (this.#formAlertDiv) {
+            this.#formAlertDiv.classList.remove(ClientConstants.bootstrapAlertSuccessClass);
             this.#formAlertDiv.classList.add(ClientConstants.bootstrapAlertDangerClass);
             this.#formAlertDiv.innerText = message || FaveColorFormHandler.defaultFormFailureAlert;
         }

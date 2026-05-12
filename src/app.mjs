@@ -85,23 +85,20 @@ const isApiRequest = request => request.path === '/api' || request.path.startsWi
 
 app.use((error, request, response, _next) => {
     console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
-    response.status(500);
 
     if (isApiRequest(request)) {
-        response.json({ message: 'Internal Server Error.' });
+        response.status(500).json({ message: 'Internal Server Error.' });
         return;
     }
 
-    response.send('Internal Server Error.');
+    response.status(500).send('Internal Server Error.');
 });
 
 app.use((request, response) => {
-    response.status(404);
-
     if (isApiRequest(request)) {
-        response.json({ message: 'Not Found.' });
+        response.status(404).json({ message: 'Not Found.' });
         return;
     }
 
-    response.send('Error 404: Page Not Found.');
+    response.status(404).send('Error 404: Page Not Found.');
 });
