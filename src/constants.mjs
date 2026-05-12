@@ -29,7 +29,7 @@ export class Constants {
     static #publicDir;
 
     static {
-       Constants.#setPublicDir();
+        Constants.#setPublicDir();
     }
 
     /**

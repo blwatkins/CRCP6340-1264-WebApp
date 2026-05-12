@@ -59,6 +59,18 @@ export class StringUtility {
         return (typeof input === 'string') && StringUtility.hexColorPattern.test(input);
     }
 
+    static isNonEmptyString(input) {
+        return (typeof input === 'string') && (input.trim().length > 0);
+    }
+
+    static trimString(input) {
+        if (typeof input !== 'string') {
+            throw new Error('Input must be a string.');
+        }
+
+        return input.trim();
+    }
+
     /**
      * @param {unknown} input
      * @returns {boolean}
