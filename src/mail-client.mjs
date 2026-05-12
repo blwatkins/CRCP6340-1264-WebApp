@@ -89,9 +89,8 @@ export class MailClient {
         try {
             await transport.verify();
             console.debug('MailClient initialized and validated.');
-        } catch {
-            console.error('MailClient initialization failed. '
-                + 'Please check your app configuration and ensure the mail server is reachable.');
+        } catch (error) {
+            console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
         }
     }
 

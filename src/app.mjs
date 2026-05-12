@@ -82,7 +82,7 @@ app.post('/api/favoriteColor', async (request, response) => {
     }
 });
 
-const isApiRequest = request => request.path.startsWith('/api/');
+const isApiRequest = request => request.path === '/api' || request.path.startsWith('/api/');
 
 app.use((error, request, response, _next) => {
     console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
