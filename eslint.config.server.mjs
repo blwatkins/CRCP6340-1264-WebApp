@@ -102,6 +102,10 @@ export default defineConfig([
                 disallowArithmeticOperators: true
             }],
 
+            'no-unused-vars': ['error', {
+                argsIgnorePattern: '^_'
+            }],
+
             'no-useless-assignment': 'error',
 
             'require-atomic-updates': 'error',

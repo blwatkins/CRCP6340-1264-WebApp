@@ -55,7 +55,7 @@ try {
 
 app.post('/api/favoriteColor', async (request, response) => {
     if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
-        response.status(400).send({ message: 'Bad Request: Request body is missing or not properly formatted.' });
+        response.status(400).json({ message: 'Bad Request: Request body is missing or not properly formatted.' });
         return;
     }
 
@@ -81,4 +81,29 @@ app.post('/api/favoriteColor', async (request, response) => {
         console.error(ErrorUtility.buildErrorMessage('Request Error', error));
         response.status(500).json({ message: 'Internal Server Error: Message failed to send.' });
     }
+});
+
+const isApiRequest = (request) => request.path.startsWith('/api/');
+
+app.use((error, request, response, _next) => {
+    console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
+    response.status(500);
+
+    if (isApiRequest(request)) {
+        response.json({ message: 'Internal Server Error.' });
+        return;
+    }
+
+    response.send('Internal Server Error.');
+});
+
+app.use((request, response) => {
+    response.status(404);
+
+    if (isApiRequest(request)) {
+        response.json({ message: 'Not Found.' });
+        return;
+    }
+
+    response.send('Error 404: Page Not Found.');
 });

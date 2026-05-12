@@ -29,10 +29,11 @@
     "build:dev:watch": "webpack --mode development --watch",
     "build:check": "npm run build:dev && npm run build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/main.mjs",
-    "start": "node src/main.mjs"
+    "dev": "dotenvx run -f .env.dev -- nodemon src/main.mjs",
+    "start": "dotenvx run -f .env.prod -- node src/main.mjs"
   },
   "dependencies": {
+    "@dotenvx/dotenvx": "^1.65.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.1",
     "nodemailer": "^8.0.7"
