@@ -45,11 +45,17 @@ export class MailClient {
         return 1024;
     }
 
+    /**
+     * @returns {string}
+     */
     static get appConfigErrorMessage() {
         return 'Invalid app configuration for MailClient. '
             + 'Please ensure all required environment variables are present and valid.';
     }
 
+    /**
+     * @returns {string}
+     */
     static get transportNotDefinedErrorMessage() {
         return 'MailClient transport is not defined.';
     }
