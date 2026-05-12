@@ -20,9 +20,17 @@
 
 import nodemailer from 'nodemailer';
 
+import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { StringUtility } from '../src-shared/string-utility.mjs';
 
 export class MailClient {
+    /**
+     * @throws {Error} - MailClient is a static class and cannot be instantiated.
+     */
+    constructor() {
+        throw new Error('MailClient is a static class and cannot be instantiated.');
+    }
+
     /**
      * @returns {number}
      */
@@ -38,8 +46,8 @@ export class MailClient {
     }
 
     static get appConfigErrorMessage() {
-        return 'Invalid app configuration for MailClient. ' +
-            'Please ensure all required environment variables are present and valid.';
+        return 'Invalid app configuration for MailClient. '
+            + 'Please ensure all required environment variables are present and valid.';
     }
 
     static get transportNotDefinedErrorMessage() {
@@ -82,8 +90,8 @@ export class MailClient {
             await transport.verify();
             console.debug('MailClient initialized and validated.');
         } catch {
-            console.error('MailClient initialization failed. ' +
-                'Please check your app configuration and ensure the mail server is reachable.');
+            console.error('MailClient initialization failed. '
+                + 'Please check your app configuration and ensure the mail server is reachable.');
         }
     }
 
@@ -123,7 +131,7 @@ export class MailClient {
             return {
                 status: 400,
                 message: 'Bad Request: Message subject or text is missing or not properly formatted.'
-            }
+            };
         }
 
         const message = {
@@ -131,25 +139,23 @@ export class MailClient {
             to: process.env.MAIL_RECIPIENT_EMAIL,
             subject: messageSubject,
             text: messageText
-        }
+        };
 
         try {
             await transport.sendMail(message);
         } catch (error) {
-            let errorMessage = 'MailClient.sendMail Error';
-            if (error instanceof Error) errorMessage = `${errorMessage}: ${error.message}`;
-            console.error(errorMessage);
+            console.error(ErrorUtility.buildErrorMessage('MailClient.sendMail Error', error));
 
             return {
                 status: 500,
                 message: 'Message failed to send. Please try again later.'
-            }
+            };
         }
 
         return {
             status: 200,
             message: 'Message sent successfully!'
-        }
+        };
     }
 
     /**

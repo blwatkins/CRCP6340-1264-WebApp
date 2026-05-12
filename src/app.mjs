@@ -19,15 +19,16 @@
  */
 
 // TODO - error handling routes
-// TODO - mail endpoint route
-// TODO - environment variable validation
 // TODO - route logging
 
 import express from 'express';
 
 import { rateLimit } from 'express-rate-limit';
-import { Constants } from './constants.mjs';
 
+import { StringUtility } from '../src-shared/string-utility.mjs';
+import { ErrorUtility } from '../src-shared/error-utility.mjs';
+
+import { Constants } from './constants.mjs';
 import { MailClient } from './mail-client.mjs';
 
 const limiter = rateLimit({
@@ -46,19 +47,38 @@ app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 
-await MailClient.init();
+try {
+    await MailClient.init();
+} catch (error) {
+    console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
+}
 
-app.post('/api/favoriteColor', (request, response) => {
-    const requestName = request.body?.name;
-    const requestColor = request.body?.color;
+app.post('/api/favoriteColor', async (request, response) => {
+    if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
+        response.status(400).send({ message: 'Bad Request: Request body is missing or not properly formatted.' });
+        return;
+    }
 
-    console.log(request.body);
+    const requestName = request.body.name;
+    const requestColor = request.body.color;
 
-    if (requestName === 'fail-test') {
-        response.status(500).json({ message: 'request error' });
-    } else if (requestName && requestColor) {
-        response.json({});
-    } else {
-        response.status(400).json({ message: 'Bad request' });
+    if (!StringUtility.isSingleLineTrimmedString(requestName) || !StringUtility.isHexColorString(requestColor)) {
+        response.status(400).json({ message: 'Bad Request: Required parameters are missing or not properly formatted.' });
+        return;
+    }
+
+    try {
+        const subject = `\u{2757} \u{1F310} ${requestName} has sent you their favorite color! \u{1F3A8}`;
+        const text = `Name: ${requestName}\nFavorite Color: ${requestColor}`;
+        const result = await MailClient.sendMail(subject, text);
+
+        if (typeof result.status === 'number' && result.status >= 100 && result.status < 600 && StringUtility.isSingleLineTrimmedString(result.message)) {
+            response.status(result.status).json({ message: result.message });
+        } else {
+            response.status(500).json({ message: 'Internal Server Error.' });
+        }
+    } catch (error) {
+        console.error(ErrorUtility.buildErrorMessage('Request Error', error));
+        response.status(500).json({ message: 'Internal Server Error: Message failed to send.' });
     }
 });
