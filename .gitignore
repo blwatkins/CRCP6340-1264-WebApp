@@ -8,6 +8,7 @@ node_modules/
 
 # compiling, bundling, testing, and coverage output
 public/dist/
+_coverage/
 
 # Environment variables
 .env.keys

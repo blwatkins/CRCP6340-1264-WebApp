@@ -28,7 +28,10 @@
     "build:dev": "webpack --mode development",
     "build:dev:watch": "webpack --mode development --watch",
     "build:check": "npm run build:dev && npm run build",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
     "dev": "dotenvx run -f .env.dev -- nodemon src/main.mjs",
     "start": "dotenvx run -f .env.prod -- node src/main.mjs"
   },
@@ -41,12 +44,16 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
+    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/ui": "^4.1.6",
     "eslint": "^10.3.0",
     "eslint-plugin-es-x": "^9.6.0",
     "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.6.0",
+    "jsdom": "^29.1.1",
     "nodemon": "^3.1.14",
+    "vitest": "^4.1.6",
     "webpack": "^5.106.2",
     "webpack-cli": "^7.0.2"
   }
