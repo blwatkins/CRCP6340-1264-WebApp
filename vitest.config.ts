@@ -23,8 +23,8 @@ import { defineConfig } from 'vitest/config';
 export default defineConfig({
     test: {
         globals: true,
-        environment: 'jsdom',
-        include: ['test/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+        environment: 'node',
+        include: ['test/**/*.{test,spec}.{js,mjs,cjs,jsx}'],
         exclude: ['node_modules', 'public/dist'],
         coverage: {
             provider: 'v8',
