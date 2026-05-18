@@ -345,19 +345,19 @@ export class FaveColorFormHandler {
                     method: 'POST',
                     body: JSON.stringify(requestBody)
                 });
+
+                if (response?.ok) {
+                    success = true;
+                }
+
+                try {
+                    const data = await response?.json();
+                    alertMessage = data?.message;
+                } catch {
+                    console.error('Could not parse JSON response.');
+                }
             } catch {
                 alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
-            }
-
-            if (response?.ok) {
-                success = true;
-            }
-
-            try {
-                const data = await response?.json();
-                alertMessage = data?.message;
-            } catch {
-                console.error('Could not parse JSON response.');
             }
         }
 
