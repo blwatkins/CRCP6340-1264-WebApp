@@ -335,10 +335,8 @@ export class FaveColorFormHandler {
         if (!requestBody) {
             alertMessage = 'Form fields missing or invalid. Please check your input and try again.';
         } else {
-            let response;
-
             try {
-                response = await fetch('/api/favoriteColor', {
+                const response = await fetch('/api/favoriteColor', {
                     headers: {
                         'Content-Type': 'application/json'
                     },
