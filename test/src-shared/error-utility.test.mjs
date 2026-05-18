@@ -26,17 +26,17 @@ describe('ErrorUtility', () => {
     /**
      * @type {string}
      */
-    const errorObjectMessage = 'Error from Error object'
+    const errorObjectMessage = 'Error from Error object';
 
     /**
      * @type {string}
      */
-    const stringMessage = 'Error from string'
+    const stringMessage = 'Error from string';
 
     /**
      * @type {string}
      */
-    const messagePrefix = 'Error message prefix'
+    const messagePrefix = 'Error message prefix';
 
     /**
      * @param {unknown} input
@@ -55,42 +55,42 @@ describe('ErrorUtility', () => {
 
     describe('buildErrorMessage', () => {
         test.each([
-            { message: null, toThrow: null, expected: 'Error.'},
-            { message: undefined, toThrow: undefined, expected: 'Error.'},
-            { message: 0, toThrow: 0, expected: 'Error.'},
-            { message: 5, toThrow: 5, expected: 'Error.'},
-            { message: () => true, toThrow: () => true, expected: 'Error.'},
-            { message: {}, toThrow: {}, expected: 'Error.'},
-            { message: '', toThrow: '', expected: 'Error.'},
+            { message: null, toThrow: null, expected: 'Error.' },
+            { message: undefined, toThrow: undefined, expected: 'Error.' },
+            { message: 0, toThrow: 0, expected: 'Error.' },
+            { message: 5, toThrow: 5, expected: 'Error.' },
+            { message: () => true, toThrow: () => true, expected: 'Error.' },
+            { message: {}, toThrow: {}, expected: 'Error.' },
+            { message: '', toThrow: '', expected: 'Error.' },
 
-            { message: null, toThrow: stringMessage, expected: stringMessage},
-            { message: undefined, toThrow: stringMessage, expected: stringMessage},
-            { message: 5, toThrow: stringMessage, expected: stringMessage},
-            { message: () => true, toThrow: stringMessage, expected: stringMessage},
-            { message: {}, toThrow: stringMessage, expected: stringMessage},
-            { message: '', toThrow: stringMessage, expected: stringMessage},
+            { message: null, toThrow: stringMessage, expected: stringMessage },
+            { message: undefined, toThrow: stringMessage, expected: stringMessage },
+            { message: 5, toThrow: stringMessage, expected: stringMessage },
+            { message: () => true, toThrow: stringMessage, expected: stringMessage },
+            { message: {}, toThrow: stringMessage, expected: stringMessage },
+            { message: '', toThrow: stringMessage, expected: stringMessage },
 
-            { message: null, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
-            { message: undefined, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
-            { message: 5, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
-            { message: () => true, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
-            { message: {}, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
-            { message: '', toThrow: new Error(errorObjectMessage), expected: errorObjectMessage},
+            { message: null, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
+            { message: undefined, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
+            { message: 5, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
+            { message: () => true, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
+            { message: {}, toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
+            { message: '', toThrow: new Error(errorObjectMessage), expected: errorObjectMessage },
 
-            { message: messagePrefix, toThrow: null, expected: messagePrefix},
-            { message: messagePrefix, toThrow: undefined, expected: messagePrefix},
-            { message: messagePrefix, toThrow: 5, expected: messagePrefix},
-            { message: messagePrefix, toThrow: () => true, expected: messagePrefix},
-            { message: messagePrefix, toThrow: {}, expected: messagePrefix},
-            { message: messagePrefix, toThrow: '', expected: messagePrefix},
+            { message: messagePrefix, toThrow: null, expected: messagePrefix },
+            { message: messagePrefix, toThrow: undefined, expected: messagePrefix },
+            { message: messagePrefix, toThrow: 5, expected: messagePrefix },
+            { message: messagePrefix, toThrow: () => true, expected: messagePrefix },
+            { message: messagePrefix, toThrow: {}, expected: messagePrefix },
+            { message: messagePrefix, toThrow: '', expected: messagePrefix },
 
-            { message: messagePrefix, toThrow: stringMessage, expected: `${messagePrefix}: ${stringMessage}`},
-            { message: messagePrefix, toThrow: new Error(errorObjectMessage), expected: `${messagePrefix}: ${errorObjectMessage}`},
+            { message: messagePrefix, toThrow: stringMessage, expected: `${messagePrefix}: ${stringMessage}` },
+            { message: messagePrefix, toThrow: new Error(errorObjectMessage), expected: `${messagePrefix}: ${errorObjectMessage}` },
             { message: messagePrefix, toThrow: new Error(''), expected: messagePrefix },
 
-            { message: null, toThrow: new Error(''), expected: 'Error.'},
-            { message: undefined, toThrow: new Error(''), expected: 'Error.'},
-            { message: '', toThrow: new Error(''), expected: 'Error.'},
+            { message: null, toThrow: new Error(''), expected: 'Error.' },
+            { message: undefined, toThrow: new Error(''), expected: 'Error.' },
+            { message: '', toThrow: new Error(''), expected: 'Error.' }
         ])('buildErrorMessage { message: $message, toThrow: $toThrow, expected: $expected }', ({ message, toThrow, expected }) => {
             try {
                 throwMe(toThrow);
