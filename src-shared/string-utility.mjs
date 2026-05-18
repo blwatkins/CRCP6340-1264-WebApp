@@ -24,7 +24,6 @@ export class StringUtility {
      */
     static #hexColorPattern = /^#[A-Fa-f0-9]{6}$/;
 
-    // TODO - test cases - 'something           else'
     /**
      * @type {RegExp}
      */
@@ -59,10 +58,18 @@ export class StringUtility {
         return (typeof input === 'string') && StringUtility.hexColorPattern.test(input);
     }
 
+    /**
+     * @param {unknown} input
+     * @returns {boolean}
+     */
     static isNonEmptyString(input) {
         return (typeof input === 'string') && (input.trim().length > 0);
     }
 
+    /**
+     * @param {unknown} input
+     * @returns {string}
+     */
     static trimString(input) {
         if (typeof input !== 'string') {
             throw new Error('Input must be a string.');
