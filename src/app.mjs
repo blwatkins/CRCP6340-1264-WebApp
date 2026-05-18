@@ -18,8 +18,6 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// TODO - route logging
-
 import express from 'express';
 
 import { rateLimit } from 'express-rate-limit';
@@ -50,6 +48,17 @@ MailClient.init()
     .catch((error) => {
         console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
     });
+
+if (Constants.requestLoggingEnabled) {
+    app.use((request, response, next) => {
+        response.on('finish', () => {
+            const requestPath = (request.baseUrl || '') + (request.path || '');
+            const message = `Request completed: ${request.method} ${requestPath} [status ${response.statusCode}]`;
+            console.debug(message);
+        });
+        next();
+    });
+}
 
 app.post('/api/favoriteColor', async (request, response) => {
     if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {

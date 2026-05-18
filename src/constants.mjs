@@ -28,8 +28,14 @@ export class Constants {
      */
     static #publicDir;
 
+    /**
+     * @type {boolean}
+     */
+    static #requestLoggingEnabled;
+
     static {
         Constants.#setPublicDir();
+        Constants.#setRequestLoggingEnabled();
     }
 
     /**
@@ -61,6 +67,13 @@ export class Constants {
     }
 
     /**
+     * @returns {boolean}
+     */
+    static get requestLoggingEnabled() {
+        return Constants.#requestLoggingEnabled;
+    }
+
+    /**
      * @returns {number}
      */
     static get requestsLimit() {
@@ -74,5 +87,12 @@ export class Constants {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         Constants.#publicDir = path.join(__dirname, '../public');
+    }
+
+    /**
+     * @returns {void}
+     */
+    static #setRequestLoggingEnabled() {
+        Constants.#requestLoggingEnabled = process.env.REQUEST_LOGGING_ENABLED === 'true';
     }
 }
