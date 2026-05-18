@@ -335,28 +335,30 @@ export class FaveColorFormHandler {
         if (!requestBody) {
             alertMessage = 'Form fields missing or invalid. Please check your input and try again.';
         } else {
-            await fetch('/api/favoriteColor', {
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                method: 'POST',
-                body: JSON.stringify(requestBody)
-            }).then((response) => {
-                if (response.ok) {
-                    success = true;
-                }
+            let response;
 
-                return response;
-            }).then(async (response) => {
-                try {
-                    const data = await response.json();
-                    alertMessage = data?.message;
-                } catch {
-                    console.error('Could not parse JSON response.');
-                }
-            }).catch(() => {
+            try {
+                response = await fetch('/api/favoriteColor', {
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    method: 'POST',
+                    body: JSON.stringify(requestBody)
+                });
+            } catch {
                 alertMessage = FaveColorFormHandler.defaultFormFailureAlert;
-            });
+            }
+
+            if (response?.ok) {
+                success = true;
+            }
+
+            try {
+                const data = await response?.json();
+                alertMessage = data?.message;
+            } catch {
+                console.error('Could not parse JSON response.');
+            }
         }
 
         this.#formAlert(success, alertMessage);
