@@ -53,7 +53,7 @@ if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {
         response.on('finish', () => {
             const requestPath = (request.baseUrl || '') + (request.path || '');
-            const message = `Request received: ${request.method} ${requestPath} [status ${response.statusCode}]`;
+            const message = `Request completed: ${request.method} ${requestPath} [status ${response.statusCode}]`;
             console.debug(message);
         });
         next();
