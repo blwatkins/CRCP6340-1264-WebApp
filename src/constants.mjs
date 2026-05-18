@@ -80,12 +80,18 @@ export class Constants {
         return 100;
     }
 
+    /**
+     * @returns {void}
+     */
     static #setPublicDir() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
         Constants.#publicDir = path.join(__dirname, '../public');
     }
 
+    /**
+     * @returns {void}
+     */
     static #setRequestLoggingEnabled() {
         Constants.#requestLoggingEnabled = process.env.REQUEST_LOGGING_ENABLED === 'true';
     }
