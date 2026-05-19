@@ -19,7 +19,7 @@
  */
 
 import { app } from './app.mjs';
-import { Constants } from './constants.mjs';
+import { Constants } from './utils/constants.mjs';
 
 app.listen(Constants.port, () => {
     console.log(`App listening on port ${Constants.port}`);

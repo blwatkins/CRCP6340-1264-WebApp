@@ -25,9 +25,9 @@ import { rateLimit } from 'express-rate-limit';
 import { StringUtility } from '../src-shared/string-utility.mjs';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
 
-import { Constants } from './constants.mjs';
-import { MailClient } from './mail-client.mjs';
-import { getNavBarLinks } from './utils.mjs';
+import { Constants } from './utils/constants.mjs';
+import { MailClient } from './mail/mail-client.mjs';
+import { getNavBarLinks } from './utils/utils.mjs';
 
 const limiter = rateLimit({
     windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
