@@ -62,7 +62,7 @@ export class ProjectHandler {
         const ids = ProjectHandler.getProjects().map(project => project.id);
 
         if (sort) {
-            ids.sort();
+            ids.sort((a, b) => a - b);
         }
 
         return ids;
