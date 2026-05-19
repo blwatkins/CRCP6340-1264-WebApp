@@ -86,6 +86,17 @@ app.get('/', (request, response) => {
     });
 });
 
+app.get('/favorite-color', (request, response) => {
+    const navBarLinks = getNavBarLinks('favoriteColor');
+    response.render('favorite-color.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFTs",
+            description: "Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
+});
+
 app.get('/projects', (request, response) => {
     const navBarLinks = getNavBarLinks('projects');
 

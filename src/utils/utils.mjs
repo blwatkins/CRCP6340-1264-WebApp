@@ -30,7 +30,7 @@ export function getNavBarLinks(currentPage) {
             current: false
         },
         about: {
-            href: '/#about',
+            href: '/#about-section',
             label: 'About',
             current: false
         },
@@ -40,7 +40,7 @@ export function getNavBarLinks(currentPage) {
             current: false
         },
         favoriteColor: {
-            href: '/favorite-color.html',
+            href: '/favorite-color',
             label: 'Favorite Color',
             current: false
         }
