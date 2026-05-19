@@ -22,8 +22,9 @@ import express from 'express';
 
 import { rateLimit } from 'express-rate-limit';
 
-import { StringUtility } from '../src-shared/string-utility.mjs';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
+import { NumberUtility } from '../src-shared/number-utility.mjs';
+import { StringUtility } from '../src-shared/string-utility.mjs';
 
 import { ProjectHandler } from './controller/project-handler.mjs';
 import { MailClient } from './mail/mail-client.mjs';
@@ -94,6 +95,42 @@ app.get('/projects', (request, response) => {
             description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
             navBarLinks
         }
+    });
+});
+
+app.get('/project/:id', (request, response, next) => {
+    const requestId = request.params.id;
+
+    if (!requestId) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const id = Number.parseInt(requestId, 10);
+
+    if (!NumberUtility.isPositiveInteger(id)) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const project = ProjectHandler.getProject(id);
+
+    if (!project || !ProjectHandler.isValidProject(project)) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const navBarLinks = getNavBarLinks();
+    response.render('project.ejs', {
+        pageData: {
+            title: `Brittni's Summer 2026 NFTs - ${project.title}`,
+            description: project.description,
+            navBarLinks
+        },
+        ...project
     });
 });
 

@@ -19,6 +19,7 @@
  */
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
+import { StringUtility } from '../../src-shared/string-utility.mjs';
 
 const loremIpsumPlaceholder = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis gravida nibh. Sed tincidunt sapien sit amet id.';
 
@@ -51,7 +52,7 @@ export class ProjectHandler {
      * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
     static getProjects() {
-        return ProjectHandler.#projects;
+        return ProjectHandler.#projects.filter(project => ProjectHandler.isValidProject(project));
     }
 
     /**
@@ -77,5 +78,33 @@ export class ProjectHandler {
         }
 
         return ProjectHandler.getProjects().find(project => project.id === id);
+    }
+
+    /**
+     * @param {unknown} project
+     * @return {boolean}
+     */
+    static isValidProject(project) {
+        if (!project) {
+            return false;
+        }
+
+        if (typeof project !== 'object') {
+            return false;
+        }
+
+        if (!NumberUtility.isPositiveInteger(project.id)) {
+            return false;
+        }
+
+        if (!StringUtility.isSingleLineTrimmedString(project.title)) {
+            return false;
+        }
+
+        if (!StringUtility.isNonEmptyString(project.description)) {
+            return false;
+        }
+
+        return StringUtility.isHexColorString(project.bgColor);
     }
 }
