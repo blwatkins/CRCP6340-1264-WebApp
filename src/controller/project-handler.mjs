@@ -24,31 +24,31 @@ const loremIpsumPlaceholder = 'Lorem ipsum dolor sit amet, consectetur adipiscin
 
 export class ProjectHandler {
     /**
-     * @type {{id: number, title: string, description: string, background: string}[]}
+     * @type {{id: number, title: string, description: string, bgColor: string}[]}
      */
     static #projects = [
         {
             id: 1,
             title: 'Project 1',
             description: loremIpsumPlaceholder,
-            background: '#65AA17'
+            bgColor: '#65AA17'
         },
         {
             id: 2,
             title: 'Project 2',
             description: loremIpsumPlaceholder,
-            background: '#72C5AB'
+            bgColor: '#72C5AB'
         },
         {
             id: 4,
             title: 'Project 4',
             description: loremIpsumPlaceholder,
-            background: '#DA9DCF'
+            bgColor: '#DA9DCF'
         }
     ];
 
     /**
-     * @returns {{id: number, title: string, description: string, background: string}[]}
+     * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
     static getProjects() {
         return ProjectHandler.#projects;
@@ -69,7 +69,7 @@ export class ProjectHandler {
 
     /**
      * @param {number} id
-     * @returns {{id: number, title: string, description: string, background: string}|undefined}
+     * @returns {{id: number, title: string, description: string, bgColor: string}|undefined}
      */
     static getProject(id) {
         if (!NumberUtility.isPositiveInteger(id)) {

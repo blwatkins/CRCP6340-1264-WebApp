@@ -25,8 +25,9 @@ import { rateLimit } from 'express-rate-limit';
 import { StringUtility } from '../src-shared/string-utility.mjs';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
 
-import { Constants } from './utils/constants.mjs';
+import { ProjectHandler } from './controller/project-handler.mjs';
 import { MailClient } from './mail/mail-client.mjs';
+import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
 
 const limiter = rateLimit({
@@ -64,13 +65,23 @@ if (Constants.requestLoggingEnabled) {
 
 app.get('/', (request, response) => {
     const navBarLinks = getNavBarLinks('home');
+    const projectIds = ProjectHandler.getProjectIds();
+    let id = 0;
+
+    if (projectIds.length > 0) {
+        const index = Math.floor(Math.random() * projectIds.length);
+        id = projectIds[index];
+    }
+
+    const project = ProjectHandler.getProject(id);
 
     response.render('index.ejs', {
         pageData: {
             title: "Brittni's Summer 2026 NFTs",
             description: "Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.",
             navBarLinks
-        }
+        },
+        project
     });
 });
 

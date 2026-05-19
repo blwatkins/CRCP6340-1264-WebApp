@@ -86,7 +86,7 @@ export class Constants {
     static #setPublicDir() {
         const __filename = fileURLToPath(import.meta.url);
         const __dirname = path.dirname(__filename);
-        Constants.#publicDir = path.join(__dirname, '../public');
+        Constants.#publicDir = path.join(__dirname, '../../public');
     }
 
     /**
