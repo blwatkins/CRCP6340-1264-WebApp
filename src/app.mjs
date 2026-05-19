@@ -27,6 +27,7 @@ import { ErrorUtility } from '../src-shared/error-utility.mjs';
 
 import { Constants } from './constants.mjs';
 import { MailClient } from './mail-client.mjs';
+import { getNavBarLinks } from './utils.mjs';
 
 const limiter = rateLimit({
     windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
@@ -43,6 +44,7 @@ app.disable('x-powered-by');
 app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
+app.set('view engine', 'ejs');
 
 MailClient.init()
     .catch((error) => {
@@ -59,6 +61,30 @@ if (Constants.requestLoggingEnabled) {
         next();
     });
 }
+
+app.get('/', (request, response) => {
+    const navBarLinks = getNavBarLinks('home');
+
+    response.render('index.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFTs",
+            description: "Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
+});
+
+app.get('/projects', (request, response) => {
+    const navBarLinks = getNavBarLinks('projects');
+
+    response.render('projects.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
+});
 
 app.post('/api/favoriteColor', async (request, response) => {
     if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
@@ -94,6 +120,7 @@ const isApiRequest = request => request.path === '/api' || request.path.startsWi
 
 app.use((error, request, response, _next) => {
     console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
+    console.error(error);
 
     if (isApiRequest(request)) {
         response.status(500).json({ message: 'Internal Server Error.' });
