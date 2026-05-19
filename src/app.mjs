@@ -127,7 +127,15 @@ app.use((error, request, response, _next) => {
         return;
     }
 
-    response.status(500).send('Internal Server Error.');
+    const navBarLinks = getNavBarLinks();
+
+    response.status(500).render('errors/500.ejs',{
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
 });
 
 app.use((request, response) => {
@@ -136,5 +144,13 @@ app.use((request, response) => {
         return;
     }
 
-    response.status(404).send('Error 404: Page Not Found.');
+    const navBarLinks = getNavBarLinks();
+
+    response.status(404).render('errors/404.ejs',{
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
 });
