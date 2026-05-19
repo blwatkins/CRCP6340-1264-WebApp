@@ -1,0 +1,8 @@
+<% if (typeof href === 'string' && typeof label === 'string' && typeof current === 'boolean') { %>
+<li class="nav-item">
+    <a class="nav-link<% if (current) { %> active<% } %>"
+       href="<%= href %>"
+       <% if (current) { %> aria-current="page" <% } %>
+    ><%= label %></a>
+</li>
+<% } %>

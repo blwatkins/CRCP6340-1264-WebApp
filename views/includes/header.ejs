@@ -1,0 +1,29 @@
+<header>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand"
+               href="/">
+                Brittni's Summer 2026 NFTs
+            </a>
+            <button class="navbar-toggler" type="button"
+                    data-bs-toggle="collapse" data-bs-target="#navbar-navigation"
+                    aria-controls="navbar-navigation" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div id="navbar-navigation"
+                 class="collapse navbar-collapse" >
+                <ul class="navbar-nav ms-auto gap-2">
+                    <% navBarLinks.forEach(link => { %>
+                        <%- include('./nav-bar-link.ejs', link); %>
+                    <% }); %>
+                    <li class="nav-item">
+                        <button class="btn btn-outline-light"
+                                disabled>
+                            Connect Wallet
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
