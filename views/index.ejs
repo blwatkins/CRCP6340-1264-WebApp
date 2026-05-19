@@ -1,0 +1,42 @@
+<%- include('./layouts/page-top.ejs', pageData); %>
+<div id="splash"
+     class="container-fluid m-0 p-0 flex-grow-1">
+    <img src="/images/splash.png"
+         alt="Randomly placed pink, purple, red, and cyan circles with a slight transparency on a black background." />
+    <div class="splash-overlay">
+        <h1>Brittni's Summer 2026 NFTs</h1>
+        <p class="fs-4">Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.</p>
+    </div>
+</div>
+<main class="container d-flex flex-column justify-content-start justify-content-md-center">
+    <div class="w-100">
+        <div class="row g-4 m-2">
+            <section id="featured-project-section"
+                     class="col-12 col-md-6 justify-content-center">
+                <div class="mb-3 text-center">
+                    <h2 class="heading">Featured Project</h2>
+                </div>
+                <div class="mb-3">
+                    <div>
+                        <%- include('./includes/project-card.ejs', project); %>
+                    </div>
+                </div>
+            </section>
+            <section id="about-section"
+                     class="col-12 col-md-6 justify-content-center">
+                <div class="mb-3 text-center">
+                    <h2 class="heading">About Brittni</h2>
+                </div>
+                <div class="mb-3">
+                    <p>
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque tristique justo quis augue commodo, eu porta velit consectetur. Proin sed massa ante. Fusce tincidunt pulvinar mi, sit amet mattis erat lacinia vitae. Proin gravida tortor at tincidunt tempor. Ut faucibus purus augue, id scelerisque magna tincidunt vehicula. Vivamus eget elit euismod, faucibus velit nec, porttitor turpis. Fusce pellentesque at sapien in ultrices. Nulla facilisi. Nam sed massa est. In sagittis orci ligula, id aliquam nibh commodo vitae. Nunc efficitur, elit et bibendum pulvinar, enim elit maximus urna, et tincidunt ex purus feugiat ligula. Sed tincidunt felis in aliquet posuere.
+                    </p>
+                    <p>
+                        Nam et pharetra lorem. Donec eget tempus arcu. Proin pulvinar feugiat sapien non feugiat. Morbi semper pharetra fringilla. Sed vitae velit id mi maximus consequat. Fusce blandit enim sit amet dolor facilisis vulputate. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin consequat, augue quis fermentum elementum, orci dolor tincidunt orci, sit amet ullamcorper ante ipsum et metus.
+                    </p>
+                </div>
+            </section>
+        </div>
+    </div>
+</main>
+<%- include('./layouts/page-bottom.ejs'); %>

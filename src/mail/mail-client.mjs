@@ -20,8 +20,8 @@
 
 import nodemailer from 'nodemailer';
 
-import { ErrorUtility } from '../src-shared/error-utility.mjs';
-import { StringUtility } from '../src-shared/string-utility.mjs';
+import { ErrorUtility } from '../../src-shared/error-utility.mjs';
+import { StringUtility } from '../../src-shared/string-utility.mjs';
 
 export class MailClient {
     /**

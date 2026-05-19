@@ -18,9 +18,20 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { app } from './app.mjs';
-import { Constants } from './utils/constants.mjs';
+export class NumberUtility {
+    /**
+     * @param {unknown} input
+     * @returns {boolean}
+     */
+    static isNumber(input) {
+        return typeof input === 'number' && !isNaN(input);
+    }
 
-app.listen(Constants.port, () => {
-    console.log(`App listening on port ${Constants.port}`);
-});
+    /**
+     * @param {unknown} input
+     * @returns {boolean}
+     */
+    static isPositiveInteger(input) {
+        return NumberUtility.isNumber(input) && Number.isFinite(input) && Number.isSafeInteger(input) && input > 0;
+    }
+}

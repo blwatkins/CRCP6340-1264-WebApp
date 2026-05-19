@@ -86,5 +86,11 @@ html {
 
 .project-card-top {
     height: 20rem;
-    background-color: var(--accent);
+    background-color: #00000000;
+}
+
+.project-preview {
+    width: min(20rem, 85%);
+    aspect-ratio: 1 / 1;
+    background-color: #00000000;
 }

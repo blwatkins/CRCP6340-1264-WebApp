@@ -1,0 +1,20 @@
+<% if (typeof bgColor === 'string'
+        && typeof title === 'string'
+        && typeof description === 'string'
+        && typeof id === 'number') { %>
+    <a href="/project/<%= id.toString() %>">
+        <div class="card mx-auto project-card">
+            <div class="card-img-top project-card-top" style="background: <%= bgColor %>">
+                &nbsp;
+            </div>
+            <div class="card-body">
+                <div class="text-center mb-3">
+                    <span class="card-title fs-4 fw-semibold"><%= title %></span>
+                </div>
+                <p class="card-text">
+                    <%= description %>
+                </p>
+            </div>
+        </div>
+    </a>
+<% } %>

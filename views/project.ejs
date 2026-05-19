@@ -1,0 +1,23 @@
+<%- include('./layouts/page-top.ejs', pageData); %>
+<main class="container d-flex flex-grow-1 flex-column justify-content-start justify-content-md-center">
+    <div class="row g-4 m-2">
+        <div class="col-12 text-center">
+            <h1 class="heading"><%= title %> <span class="text-body-secondary fs-4">(id: <%= id %>)</span></h1>
+        </div>
+    </div>
+    <div class="row g-4 m-2">
+        <div class="col-12 col-md-6">
+            <h2 class="heading text-center">Preview</h2>
+            <div class="rounded-4 project-preview mx-auto" style="background: <%= bgColor %>;">
+                &nbsp;
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div class="mb-3">
+                <span class="heading fs-3">Description: </span>
+                <span><%= description %></span>
+            </div>
+        </div>
+    </div>
+</main>
+<%- include('./layouts/page-bottom.ejs'); %>

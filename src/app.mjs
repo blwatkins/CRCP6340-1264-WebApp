@@ -22,11 +22,14 @@ import express from 'express';
 
 import { rateLimit } from 'express-rate-limit';
 
-import { StringUtility } from '../src-shared/string-utility.mjs';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
+import { NumberUtility } from '../src-shared/number-utility.mjs';
+import { StringUtility } from '../src-shared/string-utility.mjs';
 
-import { Constants } from './constants.mjs';
-import { MailClient } from './mail-client.mjs';
+import { ProjectHandler } from './controller/project-handler.mjs';
+import { MailClient } from './mail/mail-client.mjs';
+import { Constants } from './utils/constants.mjs';
+import { getNavBarLinks } from './utils/utils.mjs';
 
 const limiter = rateLimit({
     windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
@@ -43,6 +46,7 @@ app.disable('x-powered-by');
 app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
+app.set('view engine', 'ejs');
 
 MailClient.init()
     .catch((error) => {
@@ -59,6 +63,87 @@ if (Constants.requestLoggingEnabled) {
         next();
     });
 }
+
+app.get('/', (request, response) => {
+    const navBarLinks = getNavBarLinks('home');
+    const projectIds = ProjectHandler.getProjectIds();
+    let id = 0;
+
+    if (projectIds.length > 0) {
+        const index = Math.floor(Math.random() * projectIds.length);
+        id = projectIds[index];
+    }
+
+    const project = ProjectHandler.getProject(id);
+
+    response.render('index.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFTs",
+            description: "Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        },
+        project
+    });
+});
+
+app.get('/favorite-color', (request, response) => {
+    const navBarLinks = getNavBarLinks('favoriteColor');
+    response.render('favorite-color.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFTs",
+            description: "Brittni's NFTs for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
+});
+
+app.get('/projects', (request, response) => {
+    const navBarLinks = getNavBarLinks('projects');
+
+    response.render('projects.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
+});
+
+app.get('/project/:id', (request, response, next) => {
+    const requestId = request.params.id;
+
+    if (!requestId) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const id = Number.parseInt(requestId, 10);
+
+    if (!NumberUtility.isPositiveInteger(id)) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const project = ProjectHandler.getProject(id);
+
+    if (!project || !ProjectHandler.isValidProject(project)) {
+        response.status(404);
+        next();
+        return;
+    }
+
+    const navBarLinks = getNavBarLinks();
+    response.render('project.ejs', {
+        pageData: {
+            title: `Brittni's Summer 2026 NFTs - ${project.title}`,
+            description: project.description,
+            navBarLinks
+        },
+        ...project
+    });
+});
 
 app.post('/api/favoriteColor', async (request, response) => {
     if (!request.body || typeof request.body !== 'object' || Array.isArray(request.body)) {
@@ -94,13 +179,22 @@ const isApiRequest = request => request.path === '/api' || request.path.startsWi
 
 app.use((error, request, response, _next) => {
     console.error(ErrorUtility.buildErrorMessage('Internal Server Error', error));
+    console.error(error);
 
     if (isApiRequest(request)) {
         response.status(500).json({ message: 'Internal Server Error.' });
         return;
     }
 
-    response.status(500).send('Internal Server Error.');
+    const navBarLinks = getNavBarLinks();
+
+    response.status(500).render('errors/500.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
 });
 
 app.use((request, response) => {
@@ -109,5 +203,13 @@ app.use((request, response) => {
         return;
     }
 
-    response.status(404).send('Error 404: Page Not Found.');
+    const navBarLinks = getNavBarLinks();
+
+    response.status(404).render('errors/404.ejs', {
+        pageData: {
+            title: "Brittni's Summer 2026 NFT Projects",
+            description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
+            navBarLinks
+        }
+    });
 });

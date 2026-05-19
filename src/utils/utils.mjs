@@ -18,9 +18,37 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { app } from './app.mjs';
-import { Constants } from './utils/constants.mjs';
+/**
+ * @param {string|null|undefined} [currentPage]
+ * @returns {{href: string, label: string, current: boolean}[]}
+ */
+export function getNavBarLinks(currentPage) {
+    const navBarLinks = {
+        home: {
+            href: '/',
+            label: 'Home',
+            current: false
+        },
+        about: {
+            href: '/#about-section',
+            label: 'About',
+            current: false
+        },
+        projects: {
+            href: '/projects',
+            label: 'Projects',
+            current: false
+        },
+        favoriteColor: {
+            href: '/favorite-color',
+            label: 'Favorite Color',
+            current: false
+        }
+    };
 
-app.listen(Constants.port, () => {
-    console.log(`App listening on port ${Constants.port}`);
-});
+    if (currentPage && navBarLinks[currentPage]) {
+        navBarLinks[currentPage].current = true;
+    }
+
+    return Array.from(Object.values(navBarLinks));
+}
