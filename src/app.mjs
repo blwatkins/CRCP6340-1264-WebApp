@@ -129,7 +129,7 @@ app.use((error, request, response, _next) => {
 
     const navBarLinks = getNavBarLinks();
 
-    response.status(500).render('errors/500.ejs',{
+    response.status(500).render('errors/500.ejs', {
         pageData: {
             title: "Brittni's Summer 2026 NFT Projects",
             description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
@@ -146,7 +146,7 @@ app.use((request, response) => {
 
     const navBarLinks = getNavBarLinks();
 
-    response.status(404).render('errors/404.ejs',{
+    response.status(404).render('errors/404.ejs', {
         pageData: {
             title: "Brittni's Summer 2026 NFT Projects",
             description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
