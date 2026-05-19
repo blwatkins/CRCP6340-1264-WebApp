@@ -19,7 +19,7 @@
  */
 
 /**
- * @param {string|null|undefined?} currentPage
+ * @param {string|null|undefined} [currentPage]
  * @returns {{href: string, label: string, current: boolean}[]}
  */
 export function getNavBarLinks(currentPage) {
