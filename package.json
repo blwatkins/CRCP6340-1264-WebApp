@@ -33,7 +33,7 @@
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
     "dev": "dotenvx run -f .env.dev -- nodemon src/main.mjs",
-    "start": "dotenvx run -f .env.prod -- node src/main.mjs"
+    "start": "dotenvx run -- node src/main.mjs"
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.65.0",
