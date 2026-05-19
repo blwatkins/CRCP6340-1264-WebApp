@@ -37,6 +37,7 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.65.0",
+    "ejs": "^5.0.2",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.1",
     "nodemailer": "^8.0.7"
