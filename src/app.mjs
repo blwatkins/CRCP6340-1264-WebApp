@@ -28,6 +28,7 @@ import { StringUtility } from '../src-shared/string-utility.mjs';
 
 import { ProjectHandler } from './controller/project-handler.mjs';
 import { MailClient } from './mail/mail-client.mjs';
+import { SequelizeClient } from './model/client/sequelize-client.mjs';
 import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
 
@@ -50,7 +51,12 @@ app.set('view engine', 'ejs');
 
 MailClient.init()
     .catch((error) => {
-        console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
+        console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
+    });
+
+SequelizeClient.init()
+    .catch((error) => {
+        console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
     });
 
 if (Constants.requestLoggingEnabled) {
