@@ -20,7 +20,7 @@
 
 import { createAppKit } from '@reown/appkit'
 
-import { baseSepolia } from '@reown/appkit/networks'
+import { baseSepolia, base } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
 /**
@@ -35,7 +35,7 @@ const metadata = {
     icons: ['https://avatars.githubusercontent.com/u/179229932']
 };
 
-const networks = [baseSepolia];
+const networks = [baseSepolia, base];
 
 const wagmiAdapter = new WagmiAdapter({
     networks,
@@ -45,7 +45,7 @@ const wagmiAdapter = new WagmiAdapter({
 const modal = createAppKit({
     adapters: [wagmiAdapter],
     networks,
-    defaultNetwork: baseSepolia,
+    defaultNetwork: base,
     projectId,
     metadata,
     features: {
