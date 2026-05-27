@@ -36,11 +36,11 @@
     "start": "dotenvx run -- node src/main.mjs"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^1.65.0",
-    "ejs": "^5.0.2",
+    "@dotenvx/dotenvx": "^1.69.1",
+    "ejs": "^6.0.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.1",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^8.0.9"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
