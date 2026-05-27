@@ -45,7 +45,7 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
-    "@vitest/coverage-v8": "^4.1.6",
+    "@vitest/coverage-v8": "^4.1.7",
     "@vitest/ui": "^4.1.6",
     "eslint": "^10.3.0",
     "eslint-plugin-es-x": "^9.6.0",
@@ -54,7 +54,7 @@
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
     "vitest": "^4.1.6",
-    "webpack": "^5.106.2",
+    "webpack": "^5.107.2",
     "webpack-cli": "^7.0.2"
   }
 }
