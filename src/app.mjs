@@ -70,6 +70,11 @@ if (Constants.requestLoggingEnabled) {
     });
 }
 
+app.use((req, res, next) => {
+    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    next();
+});
+
 app.get('/', (request, response) => {
     const navBarLinks = getNavBarLinks('home');
     const projectIds = ProjectHandler.getProjectIds();
