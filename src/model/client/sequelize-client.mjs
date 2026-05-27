@@ -59,6 +59,7 @@ export class SequelizeClient {
 
         try {
             await sequelize.authenticate();
+            console.debug('SequelizeClient initialized and validated.');
         } catch (error) {
             console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
         }
@@ -133,8 +134,4 @@ if (SequelizeClient.hasValidConfiguration()) {
     if (sequelizeConfig) {
         sequelize = new Sequelize(sequelizeConfig);
     }
-}
-
-if (!sequelize) {
-    console.error(SequelizeClient.appConfigErrorMessage);
 }
