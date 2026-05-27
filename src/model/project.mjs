@@ -1,0 +1,122 @@
+/*
+ * Copyright (c) 2026 Brittni Watkins.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom
+ * the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
+ * INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE
+ * AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
+ * FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
+
+import { DataTypes, Model } from 'sequelize';
+
+import { SequelizeClient } from './client/sequelize-client.mjs';
+import { ProjectHandler } from '../controller/project-handler.mjs';
+
+const sequelize = SequelizeClient.sequelize;
+
+class ProjectModel extends Model {}
+
+if (sequelize) {
+    ProjectModel.init(
+        {
+            id: {
+                type: DataTypes.INTEGER,
+                autoIncrement: true,
+                primaryKey: true
+            },
+            title: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            imageUrl: {
+                type: DataTypes.STRING,
+                allowNull: false
+            },
+            description: {
+                type: DataTypes.STRING
+            },
+            quantity: {
+                type: DataTypes.INTEGER,
+                allowNull: false
+            },
+            priceEth: {
+                type: DataTypes.DECIMAL(10, 6),
+                allowNull: false
+            },
+            openDatetime: {
+                type: DataTypes.DATE,
+                allowNull: false
+            },
+            royaltyPercent: {
+                type: DataTypes.DECIMAL(5, 2),
+                allowNull: false
+            },
+            isActive: {
+                type: DataTypes.BOOLEAN,
+                allowNull: false,
+                default: false
+            }
+        },
+        { sequelize, modelName: 'project', createdAt: false, updatedAt: false }
+    );
+}
+
+export class Project extends SequelizeClient {
+    /**
+     * @inheritDoc
+     */
+    constructor() {
+        super();
+    }
+
+    /**
+     * @return {Promise<({id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}|undefined)[]>}
+     */
+    static async getAllProjects() {
+        if (!Project.sequelize) {
+            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+            return [];
+        }
+
+        try {
+            const results = await ProjectModel.findAll();
+
+            return results.map(result => Project.#queryResultToProject(result))
+                .filter(project => project !== undefined);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
+    /**
+     * @param queryResult
+     * @return {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
+     */
+    static #queryResultToProject(queryResult) {
+        const project = {
+            id: queryResult.id,
+            title: queryResult.title,
+            description: queryResult.description,
+            imageUrl: queryResult.imageUrl,
+            isActive: queryResult.isActive
+        };
+
+        if (ProjectHandler.isValidProject(project)) {
+            return project;
+        }
+
+        return undefined;
+    }
+}
