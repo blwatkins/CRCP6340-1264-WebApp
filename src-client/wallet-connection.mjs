@@ -23,7 +23,10 @@ import { createAppKit } from '@reown/appkit'
 import { baseSepolia } from '@reown/appkit/networks'
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
 
-const projectId = '';
+/**
+ * @type {string}
+ */
+const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
 
 const metadata = {
     name: 'AppKit',
