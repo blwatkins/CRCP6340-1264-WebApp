@@ -48,6 +48,12 @@ const modal = createAppKit({
     defaultNetwork: baseSepolia,
     projectId,
     metadata,
+    features: {
+        email: false,
+        socials: [],
+        emailShowWallets: false
+    },
+    allWallets: "SHOW"
 });
 
 export function hi() {
