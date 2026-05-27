@@ -26,26 +26,20 @@ import { http } from 'viem';
 
 /**
  * @type {{
- *     base: {
- *         mainnet: import('@reown/appkit').AppKitNetwork;
- *         testnet: import('@reown/appkit').AppKitNetwork;
- *     };
- *     polygon: object;
- *     ethereum: object;
- *     arbitrum: object;
+ *     base: import('@reown/appkit').AppKitNetwork[];
+ *     polygon: import('@reown/appkit').AppKitNetwork[];
+ *     ethereum: import('@reown/appkit').AppKitNetwork[];
+ *     arbitrum: import('@reown/appkit').AppKitNetwork[];
  * }}
  */
 const evmNetworkGroups = {
-    base: {
-        mainnet: base,
-        testnet: baseSepolia
-    },
-    polygon: {},
-    ethereum: {},
-    arbitrum: {}
+    base: [base, baseSepolia],
+    polygon: [],
+    ethereum: [],
+    arbitrum: []
 };
 
-const enabledEvmNetworks = Object.values(evmNetworkGroups.base);
+const enabledEvmNetworks = [...evmNetworkGroups.base];
 
 let appKitInstance;
 let hasInitializedWatchers = false;
@@ -75,7 +69,7 @@ function resolveProjectId() {
 
     if (projectId === '') {
         console.error(
-            '[wallet] VITE_REOWN_PROJECT_ID is required; AppKit initialization was skipped.'
+            '[wallet] VITE_REOWN_PROJECT_ID is required; set it in your Vite environment file before building.'
         );
         return null;
     }
@@ -147,6 +141,11 @@ function initializeWalletConnection() {
         return undefined;
     }
 
+    if (enabledEvmNetworks.length === 0) {
+        console.error('[wallet] No EVM networks configured; AppKit initialization was skipped.');
+        return undefined;
+    }
+
     const wagmiAdapter = new WagmiAdapter({
         networks: enabledEvmNetworks,
         projectId,
@@ -169,7 +168,7 @@ function initializeWalletConnection() {
     appKitInstance = createAppKit({
         adapters: [wagmiAdapter],
         networks: enabledEvmNetworks,
-        defaultNetwork: evmNetworkGroups.base.mainnet,
+        defaultNetwork: enabledEvmNetworks[0],
         projectId,
         metadata: {
             name: 'CRCP6340 WebApp',
