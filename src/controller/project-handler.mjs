@@ -20,39 +20,14 @@
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
 import { StringUtility } from '../../src-shared/string-utility.mjs';
-
-const loremIpsumPlaceholder = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis gravida nibh. Sed tincidunt sapien sit amet id.';
+import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
-     * @type {{id: number, title: string, description: string, bgColor: string}[]}
-     */
-    static #projects = [
-        {
-            id: 1,
-            title: 'Project 1',
-            description: loremIpsumPlaceholder,
-            bgColor: '#65AA17'
-        },
-        {
-            id: 2,
-            title: 'Project 2',
-            description: loremIpsumPlaceholder,
-            bgColor: '#72C5AB'
-        },
-        {
-            id: 4,
-            title: 'Project 4',
-            description: loremIpsumPlaceholder,
-            bgColor: '#DA9DCF'
-        }
-    ];
-
-    /**
      * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
-    static getProjects() {
-        return ProjectHandler.#projects.filter(project => ProjectHandler.isValidProject(project));
+    static async getProjects() {
+        return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
     }
 
     /**
@@ -101,10 +76,14 @@ export class ProjectHandler {
             return false;
         }
 
-        if (!StringUtility.isNonEmptyString(project.description)) {
+        if (!StringUtility.isSingleLineTrimmedString(project.imageUrl)) {
             return false;
         }
 
-        return StringUtility.isHexColorString(project.bgColor);
+        if (project.description !== undefined && !StringUtility.isNonEmptyString(project.description)) {
+            return false;
+        }
+
+        return (typeof project.isActive === 'boolean');
     }
 }
