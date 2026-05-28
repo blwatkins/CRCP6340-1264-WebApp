@@ -20,9 +20,10 @@
 
 import { base, baseSepolia } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { http } from 'viem';
+import { http, formatEther } from 'viem';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { createAppKit } from '@reown/appkit';
+import { watchAccount, watchChainId, watchConnections, getBalance } from '@wagmi/core';
 
 export class WalletConnectionHandler {
     /**
@@ -39,6 +40,8 @@ export class WalletConnectionHandler {
      * @type {boolean}
      */
     static #isActive = false;
+
+    static #isWagmiAdapterDecorated = false;
 
     static #wagmiAdapter;
 
@@ -60,17 +63,18 @@ export class WalletConnectionHandler {
     static init() {
         try {
             if (!WalletConnectionHandler.#projectId) {
-                console.log('WalletConnectionHandler - Setting project ID.');
                 WalletConnectionHandler.#projectId = WalletConnectionHandler.#getProjectId();
             }
 
             if (WalletConnectionHandler.#projectId && !WalletConnectionHandler.#wagmiAdapter) {
-                console.log('WalletConnectionHandler - Building WAGMI adapter.');
                 WalletConnectionHandler.#wagmiAdapter = WalletConnectionHandler.#buildWagmiAdapter();
             }
 
+            if (WalletConnectionHandler.#wagmiAdapter) {
+                WalletConnectionHandler.#decorateWagmiAdapter();
+            }
+
             if (WalletConnectionHandler.#wagmiAdapter && !WalletConnectionHandler.#appKit) {
-                console.log('WalletConnectionHandler - Building app kit.');
                 WalletConnectionHandler.#appKit = WalletConnectionHandler.#buildAppKit();
             }
         } catch (error) {
@@ -87,6 +91,8 @@ export class WalletConnectionHandler {
             return WalletConnectionHandler.#projectId;
         }
 
+        console.log('WalletConnectionHandler - Retrieving project ID.');
+
         const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
 
         if (!projectId) {
@@ -102,10 +108,12 @@ export class WalletConnectionHandler {
             return WalletConnectionHandler.#wagmiAdapter;
         }
 
+        console.log('WalletConnectionHandler - Building WAGMI adapter.');
+
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
             projectId: WalletConnectionHandler.#projectId,
-            transports: WalletConnectionHandler.#buildWagmiAdapterTransports()
+            customRpcUrls: WalletConnectionHandler.#buildRpcUrls()
         });
     }
 
@@ -114,10 +122,17 @@ export class WalletConnectionHandler {
             return WalletConnectionHandler.#appKit;
         }
 
+        console.log('WalletConnectionHandler - Building app kit.');
+
         const networks = WalletConnectionHandler.#getNetworks();
 
         return createAppKit({
             adapters: [WalletConnectionHandler.#wagmiAdapter],
+            enableWallets: true,
+            enableNetworkSwitch: true,
+            enableReconnect: true,
+            enableWalletGuide: true,
+            debug: true,
             networks: networks,
             defaultNetwork: networks[0],
             projectId: WalletConnectionHandler.#projectId,
@@ -130,9 +145,18 @@ export class WalletConnectionHandler {
             features: {
                 email: false,
                 socials: [],
-                emailShowWallets: false
+                emailShowWallets: false,
+                analytics: true,
+                balance: 'show',
+                swaps: false,
+                send: false,
+                onramp: false,
+                connectMethodsOrder: ['wallet'],
+                legalCheckbox: false
             },
-            allWallets: 'SHOW'
+            customRpcUrls: WalletConnectionHandler.#buildRpcUrls(),
+            allWallets: 'SHOW',
+            allowUnsupportedChain: false
         });
     }
 
@@ -181,10 +205,60 @@ export class WalletConnectionHandler {
         return [...evmNetworkGroups.base];
     }
 
-    static #buildWagmiAdapterTransports() {
+    // TODO - only need to do once and store statically
+    static #buildRpcUrls() {
+        console.log('WalletConnectionHandler - Building RPC URLs.');
+
         return {
-            [base.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])),
-            [baseSepolia.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]))
+            [base.id]: [{url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])}],
+            [baseSepolia.id]: [{url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])}]
         };
+    }
+
+    static #decorateWagmiAdapter() {
+        if (WalletConnectionHandler.#isWagmiAdapterDecorated || !WalletConnectionHandler.#wagmiAdapter) {
+            return;
+        }
+
+        console.log('WalletConnectionHandler - Decorating WAGMI Adapter.');
+
+        // TODO - store data statically so balance and account can be updated on chain AND account switch
+        watchAccount(WalletConnectionHandler.#wagmiAdapter.wagmiConfig, {
+            onChange: async (account) => {
+                console.info('WalletConnectHandler: Account Update', {
+                    address: account.address ?? null,
+                    isConnected: account.isConnected,
+                    connector: account.connector?.name ?? null
+                });
+
+                if (account && account.isConnected) {
+                    const balance = await getBalance(WalletConnectionHandler.#wagmiAdapter.wagmiConfig, {
+                        address: account.address,
+                        chainId: base.id,
+                        blockTag: 'latest'
+                    });
+
+                    console.info('WalletConnectHandler: Balance Log', {
+                        balance: formatEther(balance.value)
+                    });
+                }
+            }
+        });
+
+        watchChainId(WalletConnectionHandler.#wagmiAdapter.wagmiConfig, {
+            onChange: (chainId) => {
+                console.info('WalletConnectHandler: Chain Update', { chainId });
+            }
+        });
+
+        watchConnections(WalletConnectionHandler.#wagmiAdapter.wagmiConfig, {
+            onChange: (connections) => {
+                console.info('WalletConnectHandler: Connector Sessions Update', {
+                    count: connections.length
+                });
+            }
+        });
+
+        WalletConnectionHandler.#isWagmiAdapterDecorated = true;
     }
 }
