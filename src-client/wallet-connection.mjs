@@ -20,7 +20,7 @@
 
 import { base, baseSepolia } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { formatEther } from 'viem';
+import { formatEther, http } from 'viem';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { createAppKit } from '@reown/appkit';
 import { watchAccount, watchChainId, watchConnections, getBalance } from '@wagmi/core';
@@ -107,7 +107,8 @@ export class WalletConnectionHandler {
 
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
-            projectId: WalletConnectionHandler.#projectId
+            projectId: WalletConnectionHandler.#projectId,
+            transports: WalletConnectionHandler.#buildTransports()  // ← added
         });
     }
 
@@ -204,8 +205,15 @@ export class WalletConnectionHandler {
         console.log('WalletConnectionHandler - Building RPC URLs.');
 
         return {
-            [base.id]: [{ url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]) }],
-            [baseSepolia.id]: [{ url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]) }]
+            [base.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])],
+            [baseSepolia.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])]
+        };
+    }
+
+    static #buildTransports() {
+        return {
+            [base.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])),
+            [baseSepolia.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]))
         };
     }
 
