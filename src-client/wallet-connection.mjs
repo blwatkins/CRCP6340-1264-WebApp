@@ -36,6 +36,8 @@ export class WalletConnectionHandler {
      */
     static #projectId;
 
+    static #rpcUrlConfig;
+
     static #isWagmiAdapterDecorated = false;
 
     static #wagmiAdapter;
@@ -88,14 +90,10 @@ export class WalletConnectionHandler {
 
         console.log('WalletConnectionHandler - Retrieving project ID.');
 
-        const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
-
-        if (!projectId) {
-            console.error('WalletConnectionHandler Error: Missing Reown AppKit Project ID configuration.');
-            return undefined;
-        }
-
-        return projectId.trim();
+        return WalletConnectionHandler.#getRequiredEnvVar(
+            'VITE_REOWN_PROJECT_ID',
+            'Missing Reown AppKit Project ID configuration.'
+        );
     }
 
     static #buildWagmiAdapter() {
@@ -105,10 +103,18 @@ export class WalletConnectionHandler {
 
         console.log('WalletConnectionHandler - Building WAGMI adapter.');
 
+        const customRpcUrls = WalletConnectionHandler.#buildRpcUrls();
+        const transports = WalletConnectionHandler.#buildTransports();
+
+        if (!customRpcUrls || !transports) {
+            return undefined;
+        }
+
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
             projectId: WalletConnectionHandler.#projectId,
-            transports: WalletConnectionHandler.#buildTransports()
+            transports: transports,
+            customRpcUrls: customRpcUrls
         });
     }
 
@@ -120,6 +126,12 @@ export class WalletConnectionHandler {
         console.log('WalletConnectionHandler - Building app kit.');
 
         const networks = WalletConnectionHandler.#getNetworks();
+        const metadataUrl = WalletConnectionHandler.#getMetadataUrl();
+        const customRpcUrls = WalletConnectionHandler.#buildRpcUrls();
+
+        if (!metadataUrl || !customRpcUrls) {
+            return undefined;
+        }
 
         return createAppKit({
             adapters: [WalletConnectionHandler.#wagmiAdapter],
@@ -134,7 +146,7 @@ export class WalletConnectionHandler {
             metadata: {
                 name: 'CRCP6340 WebApp',
                 description: 'Wallet connection for the CRCP6340 NFT web application.',
-                url: WalletConnectionHandler.#getMetadataUrl(),
+                url: metadataUrl,
                 icons: ['https://avatars.githubusercontent.com/u/179229932']
             },
             features: {
@@ -149,44 +161,84 @@ export class WalletConnectionHandler {
                 connectMethodsOrder: ['wallet'],
                 legalCheckbox: false
             },
-            customRpcUrls: WalletConnectionHandler.#buildRpcUrls(),
+            customRpcUrls: customRpcUrls,
             allWallets: 'SHOW',
             allowUnsupportedChain: false
         });
     }
 
-    // TODO - check for non-empty string
     /**
      * @param {string} envVarName
-     * @param {string} defaultUrl
-     * @return {string}
+     * @param {string} errorMessage
+     * @returns {string|undefined}
      */
-    static #getRpcUrl(envVarName, defaultUrl) {
-        const url = import.meta.env[envVarName];
+    static #getRequiredEnvVar(envVarName, errorMessage) {
+        const value = import.meta.env[envVarName];
 
-        if (!url) {
-            console.warn(`WalletConnectionHandler Warning: Missing RPC URL configuration. Using default: ${defaultUrl}.`);
-            return defaultUrl;
+        if (typeof value !== 'string' || value.trim().length === 0) {
+            console.error(`WalletConnectionHandler Error: ${errorMessage}`);
+            return undefined;
         }
 
-        return url;
+        return value.trim();
     }
 
-    // TODO - check for non-empty string
-    static #getMetadataUrl() {
-        const url = import.meta.env.VITE_APP_URL;
-
-        if (!url) {
-            console.warn('WalletConnectionHandler Warning: Missing app URL configuration.');
-
-            if (typeof window !== 'undefined' && window.location?.origin) {
-                return window.location.origin;
-            }
-
-            return 'http://localhost:3000';
+    static #getRpcUrlConfig() {
+        if (WalletConnectionHandler.#rpcUrlConfig) {
+            return WalletConnectionHandler.#rpcUrlConfig;
         }
 
-        return url.trim();
+        const baseMainnetRpcUrl = WalletConnectionHandler.#getRequiredEnvVar(
+            'VITE_BASE_MAINNET_RPC_URL',
+            'Missing VITE_BASE_MAINNET_RPC_URL configuration.'
+        );
+        const baseSepoliaRpcUrl = WalletConnectionHandler.#getRequiredEnvVar(
+            'VITE_BASE_SEPOLIA_RPC_URL',
+            'Missing VITE_BASE_SEPOLIA_RPC_URL configuration.'
+        );
+
+        if (!baseMainnetRpcUrl || !baseSepoliaRpcUrl) {
+            return undefined;
+        }
+
+        WalletConnectionHandler.#rpcUrlConfig = {
+            baseMainnetRpcUrl: baseMainnetRpcUrl,
+            baseSepoliaRpcUrl: baseSepoliaRpcUrl
+        };
+
+        return WalletConnectionHandler.#rpcUrlConfig;
+    }
+
+    static #getMetadataUrl() {
+        const appUrl = WalletConnectionHandler.#getRequiredEnvVar(
+            'VITE_APP_URL',
+            'Missing VITE_APP_URL configuration. Use your exact localhost origin, for example: http://localhost:3000.'
+        );
+
+        if (!appUrl) {
+            return undefined;
+        }
+
+        let parsedUrl;
+        try {
+            parsedUrl = new URL(appUrl);
+        } catch {
+            console.error('WalletConnectionHandler Error: VITE_APP_URL must be a valid URL origin like http://localhost:3000.');
+            return undefined;
+        }
+
+        if (parsedUrl.pathname !== '/' || parsedUrl.search || parsedUrl.hash) {
+            console.error('WalletConnectionHandler Error: VITE_APP_URL must only include protocol, host, and port (no path, query, or hash).');
+            return undefined;
+        }
+
+        const normalizedOrigin = parsedUrl.origin;
+
+        if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== normalizedOrigin) {
+            console.warn(`WalletConnectionHandler Warning: VITE_APP_URL (${normalizedOrigin}) does not match current origin (${window.location.origin}). Ensure this exact origin is allowed in your Reown AppKit dashboard.`);
+        }
+
+        return normalizedOrigin;
     }
 
     static #getNetworks() {
@@ -200,23 +252,29 @@ export class WalletConnectionHandler {
         return [...evmNetworkGroups.base];
     }
 
-    // TODO - only need to do once and store statically
     static #buildRpcUrls() {
         console.log('WalletConnectionHandler - Building RPC URLs.');
 
-        const baseUrl = WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]);
-        const baseSepoliaUrl = WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]);
+        const rpcUrlConfig = WalletConnectionHandler.#getRpcUrlConfig();
+        if (!rpcUrlConfig) {
+            return undefined;
+        }
 
         return {
-            [`eip155:${base.id}`]: [{ url: baseUrl }],
-            [`eip155:${baseSepolia.id}`]: [{ url: baseSepoliaUrl }]
+            [`eip155:${base.id}`]: [{ url: rpcUrlConfig.baseMainnetRpcUrl }],
+            [`eip155:${baseSepolia.id}`]: [{ url: rpcUrlConfig.baseSepoliaRpcUrl }]
         };
     }
 
     static #buildTransports() {
+        const rpcUrlConfig = WalletConnectionHandler.#getRpcUrlConfig();
+        if (!rpcUrlConfig) {
+            return undefined;
+        }
+
         return {
-            [base.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])),
-            [baseSepolia.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]))
+            [base.id]: http(rpcUrlConfig.baseMainnetRpcUrl),
+            [baseSepolia.id]: http(rpcUrlConfig.baseSepoliaRpcUrl)
         };
     }
 
