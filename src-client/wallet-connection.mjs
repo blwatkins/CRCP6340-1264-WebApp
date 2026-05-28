@@ -125,12 +125,13 @@ function decorateWagmiAdapter() {
     console.debug('Wallet Connection - Decorating WagmiAdapter.');
 
     watchAccount(wagmiAdapter.wagmiConfig, {
-        onChange: async (account) => {
+        onChange: (account) => {
             console.debug('Wallet Connection - Account Update.', {
                 address: account.address ?? null,
                 isConnected: account.isConnected,
                 connector: account.connector?.name ?? null,
                 chainId: account.chainId ?? null
+            });
         }
     });
 
