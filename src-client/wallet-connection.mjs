@@ -18,43 +18,177 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { createAppKit } from '@reown/appkit'
-
-import { baseSepolia, base } from '@reown/appkit/networks'
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi'
+import { createAppKit } from '@reown/appkit';
+import { base, baseSepolia } from '@reown/appkit/networks';
+import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
+import { watchAccount, watchChainId, watchConnections } from '@wagmi/core';
+import { http } from 'viem';
 
 /**
- * @type {string}
+ * @type {{
+ *     base: import('@reown/appkit').AppKitNetwork[];
+ *     polygon: import('@reown/appkit').AppKitNetwork[];
+ *     ethereum: import('@reown/appkit').AppKitNetwork[];
+ *     arbitrum: import('@reown/appkit').AppKitNetwork[];
+ * }}
  */
-const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
-
-const metadata = {
-    name: 'AppKit',
-    description: 'AppKit Example',
-    url: 'http://localhost:3000',
-    icons: ['https://avatars.githubusercontent.com/u/179229932']
+const evmNetworkGroups = {
+    base: [base, baseSepolia],
+    polygon: [],
+    ethereum: [],
+    arbitrum: []
 };
 
-const networks = [baseSepolia, base];
+const enabledEvmNetworks = [...evmNetworkGroups.base];
 
-const wagmiAdapter = new WagmiAdapter({
-    networks,
-    projectId
-})
+let appKitInstance;
+let hasInitializedWatchers = false;
 
-const modal = createAppKit({
-    adapters: [wagmiAdapter],
-    networks,
-    defaultNetwork: base,
-    projectId,
-    metadata,
-    features: {
-        email: false,
-        socials: [],
-        emailShowWallets: false
-    },
-    allWallets: "SHOW"
-});
+/**
+ * @returns {string}
+ */
+function resolveMetadataUrl() {
+    const configuredAppUrl = (import.meta.env.VITE_APP_URL ?? '').trim();
+
+    if (configuredAppUrl !== '') {
+        return configuredAppUrl;
+    }
+
+    if (typeof window !== 'undefined' && window.location?.origin) {
+        return window.location.origin;
+    }
+
+    return 'http://localhost:3000';
+}
+
+/**
+ * @returns {string | null}
+ */
+function resolveProjectId() {
+    const projectId = (import.meta.env.VITE_REOWN_PROJECT_ID ?? '').trim();
+
+    if (projectId === '') {
+        console.error(
+            '[wallet] VITE_REOWN_PROJECT_ID is required; set it in your Vite environment file before building.'
+        );
+        return null;
+    }
+
+    return projectId;
+}
+
+/**
+ * @param {string} envVarName
+ * @param {string} fallbackUrl
+ * @returns {string}
+ */
+function resolveRpcUrl(envVarName, fallbackUrl) {
+    const configuredRpcUrl = (import.meta.env[envVarName] ?? '').trim();
+
+    if (configuredRpcUrl !== '') {
+        return configuredRpcUrl;
+    }
+
+    return fallbackUrl;
+}
+
+/**
+ * @param {WagmiAdapter} wagmiAdapter
+ */
+function setupWalletStateLogging(wagmiAdapter) {
+    if (hasInitializedWatchers) {
+        return;
+    }
+
+    hasInitializedWatchers = true;
+
+    watchAccount(wagmiAdapter.wagmiConfig, {
+        onChange: (account) => {
+            console.info('[wallet] account update', {
+                address: account.address ?? null,
+                isConnected: account.isConnected,
+                connector: account.connector?.name ?? null
+            });
+        }
+    });
+
+    watchChainId(wagmiAdapter.wagmiConfig, {
+        onChange: (chainId) => {
+            console.info('[wallet] chain update', { chainId });
+        }
+    });
+
+    watchConnections(wagmiAdapter.wagmiConfig, {
+        onChange: (connections) => {
+            console.info('[wallet] connector sessions', {
+                count: connections.length
+            });
+        }
+    });
+}
+
+/**
+ * @returns {import('@reown/appkit').AppKit | undefined}
+ */
+function initializeWalletConnection() {
+    if (appKitInstance) {
+        return appKitInstance;
+    }
+
+    const projectId = resolveProjectId();
+
+    if (!projectId) {
+        return undefined;
+    }
+
+    if (enabledEvmNetworks.length === 0) {
+        console.error('[wallet] No EVM networks configured; AppKit initialization was skipped.');
+        return undefined;
+    }
+
+    const wagmiAdapter = new WagmiAdapter({
+        networks: enabledEvmNetworks,
+        projectId,
+        transports: {
+            [base.id]: http(
+                resolveRpcUrl(
+                    'VITE_BASE_MAINNET_RPC_URL',
+                    base.rpcUrls.default.http[0]
+                )
+            ),
+            [baseSepolia.id]: http(
+                resolveRpcUrl(
+                    'VITE_BASE_SEPOLIA_RPC_URL',
+                    baseSepolia.rpcUrls.default.http[0]
+                )
+            )
+        }
+    });
+
+    appKitInstance = createAppKit({
+        adapters: [wagmiAdapter],
+        networks: enabledEvmNetworks,
+        defaultNetwork: enabledEvmNetworks[0],
+        projectId,
+        metadata: {
+            name: 'CRCP6340 WebApp',
+            description: 'Wallet connection for the CRCP6340 NFT web application.',
+            url: resolveMetadataUrl(),
+            icons: ['https://avatars.githubusercontent.com/u/179229932']
+        },
+        features: {
+            email: false,
+            socials: [],
+            emailShowWallets: false
+        },
+        allWallets: 'SHOW'
+    });
+
+    setupWalletStateLogging(wagmiAdapter);
+
+    return appKitInstance;
+}
 
 export function hi() {
+    return initializeWalletConnection();
 }
