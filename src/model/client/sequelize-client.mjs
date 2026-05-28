@@ -110,7 +110,7 @@ export class SequelizeClient {
         try {
             return {
                 dialect: 'mysql',
-                logging: console.debug,
+                logging: false,
                 host: process.env.MYSQL_HOST,
                 port: Number.parseInt(process.env.MYSQL_PORT, 10),
                 username: process.env.MYSQL_USERNAME,
