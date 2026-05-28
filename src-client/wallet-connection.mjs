@@ -19,7 +19,7 @@
  */
 
 import { createAppKit } from '@reown/appkit';
-import { base, baseSepolia } from '@reown/appkit/networks';
+import { base, baseSepolia, polygon, polygonAmoy } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
 import { watchAccount, watchChainId, watchConnections } from '@wagmi/core';
 import { http } from 'viem';
@@ -39,25 +39,31 @@ function getRpcUrl(envVar, defaultUrl) {
 
 const rpcUrlConfig = {
     baseMainnet: getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]),
-    baseSepolia: getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])
+    baseSepolia: getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]),
+    polygonMainnet: getRpcUrl('VITE_POLYGON_MAINNET_RPC_URL', polygon.rpcUrls.default.http[0]),
+    polygonAmoy: getRpcUrl('VITE_POLYGON_AMOY_RPC_URL', polygonAmoy.rpcUrls.default.http[0])
 };
 
 function buildTransports() {
     return {
         [base.id]: http(rpcUrlConfig.baseMainnet),
-        [baseSepolia.id]: http(rpcUrlConfig.baseSepolia)
+        [baseSepolia.id]: http(rpcUrlConfig.baseSepolia),
+        [polygon.id]: http(rpcUrlConfig.polygonMainnet),
+        [polygonAmoy.id]: http(rpcUrlConfig.polygonAmoy)
     }
 }
 
 function buildCustomRpcUrls() {
     return {
         [`eip155:${base.id}`]: [{ url: rpcUrlConfig.baseMainnet }],
-        [`eip155:${baseSepolia.id}`]: [{ url: rpcUrlConfig.baseSepolia }]
+        [`eip155:${baseSepolia.id}`]: [{ url: rpcUrlConfig.baseSepolia }],
+        [`eip155:${polygon.id}`]: [{ url: rpcUrlConfig.polygon }],
+        [`eip155:${polygonAmoy.id}`]: [{ url: rpcUrlConfig.polygonAmoy }],
     };
 }
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
-const networks = [base, baseSepolia];
+const networks = [base, baseSepolia, polygon, polygonAmoy];
 const transports = buildTransports();
 const customRpcUrls = buildCustomRpcUrls();
 
