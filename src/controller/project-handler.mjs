@@ -20,14 +20,15 @@
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
 import { StringUtility } from '../../src-shared/string-utility.mjs';
-import { Project } from '../model/project.mjs';
+// import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
      * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
-    static async getProjects() {
-        return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
+    static getProjects() {
+        // return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
+        return [];
     }
 
     /**
