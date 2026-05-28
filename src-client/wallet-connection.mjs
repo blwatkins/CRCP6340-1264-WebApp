@@ -108,7 +108,7 @@ export class WalletConnectionHandler {
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
             projectId: WalletConnectionHandler.#projectId,
-            transports: WalletConnectionHandler.#buildTransports()  // ← added
+            transports: WalletConnectionHandler.#buildTransports()
         });
     }
 
@@ -204,9 +204,12 @@ export class WalletConnectionHandler {
     static #buildRpcUrls() {
         console.log('WalletConnectionHandler - Building RPC URLs.');
 
+        const baseUrl = WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]);
+        const baseSepoliaUrl = WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]);
+
         return {
-            [base.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])],
-            [baseSepolia.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])]
+            [`eip155:${base.id}`]: [{ url: baseUrl }],
+            [`eip155:${baseSepolia.id}`]: [{ url: baseSepoliaUrl }]
         };
     }
 
