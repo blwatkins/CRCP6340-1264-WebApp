@@ -75,9 +75,9 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get('/', (request, response) => {
+app.get('/', async (request, response) => {
     const navBarLinks = getNavBarLinks('home');
-    const projectIds = ProjectHandler.getProjectIds();
+    const projectIds = await ProjectHandler.getProjectIds();
     let id = 0;
 
     if (projectIds.length > 0) {
@@ -85,7 +85,7 @@ app.get('/', (request, response) => {
         id = projectIds[index];
     }
 
-    const project = ProjectHandler.getProject(id);
+    const project = await ProjectHandler.getProject(id);
 
     response.render('index.ejs', {
         pageData: {
@@ -108,19 +108,21 @@ app.get('/favorite-color', (request, response) => {
     });
 });
 
-app.get('/projects', (request, response) => {
+app.get('/projects', async (request, response) => {
     const navBarLinks = getNavBarLinks('projects');
+    const projects = await ProjectHandler.getProjects();
 
     response.render('projects.ejs', {
         pageData: {
             title: "Brittni's Summer 2026 NFT Projects",
             description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
             navBarLinks
-        }
+        },
+        projects
     });
 });
 
-app.get('/project/:id', (request, response, next) => {
+app.get('/project/:id', async (request, response, next) => {
     const requestId = request.params.id;
 
     if (!requestId) {
@@ -137,7 +139,7 @@ app.get('/project/:id', (request, response, next) => {
         return;
     }
 
-    const project = ProjectHandler.getProject(id);
+    const project = await ProjectHandler.getProject(id);
 
     if (!project || !ProjectHandler.isValidProject(project)) {
         response.status(404);
