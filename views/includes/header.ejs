@@ -16,11 +16,11 @@
                     <% navBarLinks.forEach(link => { %>
                         <%- include('./nav-bar-link.ejs', link); %>
                     <% }); %>
-                    <li class="nav-item">
-                        <appkit-network-button></appkit-network-button>
+                    <li id="connect-wallet-button" class="nav-item">
+                        <appkit-button></appkit-button>
                     </li>
                     <li class="nav-item">
-                        <appkit-button></appkit-button>
+                        <appkit-network-button></appkit-network-button>
                     </li>
                 </ul>
             </div>
