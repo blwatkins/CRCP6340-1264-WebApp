@@ -121,7 +121,7 @@ function setupWalletStateLogging(wagmiAdapter) {
     watchConnections(wagmiAdapter.wagmiConfig, {
         onChange: (connections) => {
             console.info('[wallet] connector sessions', {
-                count: connections.size
+                count: connections.length
             });
         }
     });
