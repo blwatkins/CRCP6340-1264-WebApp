@@ -19,15 +19,13 @@
  */
 
 import { FaveColorFormHandler } from './favorite-color-form.mjs';
-import { WalletConnectionHandler } from './wallet-connection.mjs';
+import { initAppKit } from './wallet-connection.mjs';
+
+initAppKit();
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById(FaveColorFormHandler.primaryElementId)) {
         const handler = new FaveColorFormHandler();
         handler.init();
-    }
-
-    if (document.getElementById(WalletConnectionHandler.primaryElementId)) {
-        WalletConnectionHandler.init();
     }
 });

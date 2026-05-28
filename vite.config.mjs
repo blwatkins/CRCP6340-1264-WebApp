@@ -26,7 +26,7 @@ export default defineConfig({
     build: {
         outDir: 'public/dist',
         emptyOutDir: true,
-        rolldownOptions: {
+        rollupOptions: {
             input: './src-client/index.mjs',
             output: {
                 entryFileNames: 'bundle.js',
