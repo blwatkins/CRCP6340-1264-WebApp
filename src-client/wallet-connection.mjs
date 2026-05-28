@@ -50,7 +50,7 @@ function buildTransports() {
         [baseSepolia.id]: http(rpcUrlConfig.baseSepolia),
         [polygon.id]: http(rpcUrlConfig.polygonMainnet),
         [polygonAmoy.id]: http(rpcUrlConfig.polygonAmoy)
-    }
+    };
 }
 
 function buildCustomRpcUrls() {
