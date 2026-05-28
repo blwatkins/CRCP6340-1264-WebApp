@@ -2,7 +2,7 @@
         && (typeof description === 'string' || description === null || description === undefined)
         && typeof id === 'number'
         && typeof imageUrl === 'string') { %>
-    <a href="/project/<%= id.toString() %>">
+    <a href="/project/<%= id.toString() %>" class="d-flex flex-grow-1">
         <div class="card mx-auto project-card">
             <div class="project-card-top">
                 <img src="<%= imageUrl %>" class="w-100 card-img-top" alt="<%= title %> project thumbnail image.">
@@ -11,11 +11,6 @@
                 <div class="text-center mb-3">
                     <span class="card-title fs-4 fw-semibold"><%= title %></span>
                 </div>
-                <% if (description) { %>
-                    <p class="card-text">
-                        <%= description %>
-                    </p>
-                <% } %>
             </div>
         </div>
     </a>

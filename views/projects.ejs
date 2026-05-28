@@ -1,4 +1,16 @@
 <%- include('./layouts/page-top.ejs', pageData); %>
 <main class="container d-flex flex-grow-1 flex-column justify-content-start justify-content-md-center">
+    <div class="row g-4 m-2">
+        <div class="col-12 text-center">
+            <h1 class="heading">Projects</h1>
+        </div>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 g-4 m-2">
+        <% projects.forEach(project => { %>
+            <div class="col d-flex flex-column">
+                <%- include('./includes/project-card.ejs', project); %>
+            </div>
+        <% }); %>
+    </div>
 </main>
 <%- include('./layouts/page-bottom.ejs'); %>
