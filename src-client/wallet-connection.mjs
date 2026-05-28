@@ -20,7 +20,7 @@
 
 import { base, baseSepolia } from '@reown/appkit/networks';
 import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { http, formatEther } from 'viem';
+import { formatEther } from 'viem';
 import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { createAppKit } from '@reown/appkit';
 import { watchAccount, watchChainId, watchConnections, getBalance } from '@wagmi/core';
@@ -35,11 +35,6 @@ export class WalletConnectionHandler {
      * @type {string|undefined}
      */
     static #projectId;
-
-    /**
-     * @type {boolean}
-     */
-    static #isActive = false;
 
     static #isWagmiAdapterDecorated = false;
 
@@ -70,12 +65,12 @@ export class WalletConnectionHandler {
                 WalletConnectionHandler.#wagmiAdapter = WalletConnectionHandler.#buildWagmiAdapter();
             }
 
-            if (WalletConnectionHandler.#wagmiAdapter) {
-                WalletConnectionHandler.#decorateWagmiAdapter();
-            }
-
             if (WalletConnectionHandler.#wagmiAdapter && !WalletConnectionHandler.#appKit) {
                 WalletConnectionHandler.#appKit = WalletConnectionHandler.#buildAppKit();
+            }
+
+            if (WalletConnectionHandler.#wagmiAdapter && WalletConnectionHandler.#appKit) {
+                WalletConnectionHandler.#decorateWagmiAdapter();
             }
         } catch (error) {
             console.error(ErrorUtility.buildErrorMessage('WalletConnectionHandler Initialization Error', error));
@@ -112,8 +107,7 @@ export class WalletConnectionHandler {
 
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
-            projectId: WalletConnectionHandler.#projectId,
-            customRpcUrls: WalletConnectionHandler.#buildRpcUrls()
+            projectId: WalletConnectionHandler.#projectId
         });
     }
 
@@ -210,8 +204,8 @@ export class WalletConnectionHandler {
         console.log('WalletConnectionHandler - Building RPC URLs.');
 
         return {
-            [base.id]: [{url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])}],
-            [baseSepolia.id]: [{url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])}]
+            [base.id]: [{ url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]) }],
+            [baseSepolia.id]: [{ url: WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]) }]
         };
     }
 
@@ -234,7 +228,7 @@ export class WalletConnectionHandler {
                 if (account && account.isConnected) {
                     const balance = await getBalance(WalletConnectionHandler.#wagmiAdapter.wagmiConfig, {
                         address: account.address,
-                        chainId: base.id,
+                        chainId: account.chainId,
                         blockTag: 'latest'
                     });
 

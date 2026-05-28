@@ -20,7 +20,7 @@
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
 import { StringUtility } from '../../src-shared/string-utility.mjs';
-import { Project } from '../model/project.mjs';
+// import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
