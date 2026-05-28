@@ -57,8 +57,8 @@ function buildCustomRpcUrls() {
     return {
         [`eip155:${base.id}`]: [{ url: rpcUrlConfig.baseMainnet }],
         [`eip155:${baseSepolia.id}`]: [{ url: rpcUrlConfig.baseSepolia }],
-        [`eip155:${polygon.id}`]: [{ url: rpcUrlConfig.polygon }],
-        [`eip155:${polygonAmoy.id}`]: [{ url: rpcUrlConfig.polygonAmoy }],
+        [`eip155:${polygon.id}`]: [{ url: rpcUrlConfig.polygonMainnet }],
+        [`eip155:${polygonAmoy.id}`]: [{ url: rpcUrlConfig.polygonAmoy }]
     };
 }
 
