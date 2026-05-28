@@ -2,6 +2,14 @@
 
 Implementation of the web application project for CRCP 6340 - Creative Coding for Application Development; Summer 2026 term.
 
+## Local environment setup
+
+Copy `.env.example` to `.env.dev` and provide non-empty values for:
+- `VITE_REOWN_PROJECT_ID`
+- `VITE_APP_URL`
+- `VITE_BASE_MAINNET_RPC_URL`
+- `VITE_BASE_SEPOLIA_RPC_URL`
+
 ## Attributions
 
 ### Favicon

@@ -26,6 +26,10 @@ import { createAppKit } from '@reown/appkit';
 import { watchAccount, watchChainId, watchConnections, getBalance } from '@wagmi/core';
 
 export class WalletConnectionHandler {
+    static #baseMainnetCaipChainId = 'eip155:8453';
+
+    static #baseSepoliaCaipChainId = 'eip155:84532';
+
     /**
      * @type {string}
      */
@@ -41,6 +45,11 @@ export class WalletConnectionHandler {
     static #wagmiAdapter;
 
     static #appKit;
+
+    /**
+     * @type {{[chainId: number]: string}|undefined}
+     */
+    static #rpcEndpoints;
 
     /**
      * The primary element ID for this handler.
@@ -108,7 +117,7 @@ export class WalletConnectionHandler {
         return new WagmiAdapter({
             networks: WalletConnectionHandler.#getNetworks(),
             projectId: WalletConnectionHandler.#projectId,
-            transports: WalletConnectionHandler.#buildTransports()  // ← added
+            transports: WalletConnectionHandler.#buildTransports()
         });
     }
 
@@ -123,10 +132,7 @@ export class WalletConnectionHandler {
 
         return createAppKit({
             adapters: [WalletConnectionHandler.#wagmiAdapter],
-            enableWallets: true,
-            enableNetworkSwitch: true,
             enableReconnect: true,
-            enableWalletGuide: true,
             debug: true,
             networks: networks,
             defaultNetwork: networks[0],
@@ -141,17 +147,9 @@ export class WalletConnectionHandler {
                 email: false,
                 socials: [],
                 emailShowWallets: false,
-                analytics: true,
-                balance: 'show',
-                swaps: false,
-                send: false,
-                onramp: false,
-                connectMethodsOrder: ['wallet'],
                 legalCheckbox: false
             },
-            customRpcUrls: WalletConnectionHandler.#buildRpcUrls(),
-            allWallets: 'SHOW',
-            allowUnsupportedChain: false
+            customRpcUrls: WalletConnectionHandler.#buildRpcUrls()
         });
     }
 
@@ -163,30 +161,31 @@ export class WalletConnectionHandler {
      */
     static #getRpcUrl(envVarName, defaultUrl) {
         const url = import.meta.env[envVarName];
+        const trimmedUrl = typeof url === 'string' ? url.trim() : '';
 
-        if (!url) {
-            console.warn(`WalletConnectionHandler Warning: Missing RPC URL configuration. Using default: ${defaultUrl}.`);
+        if (!trimmedUrl) {
+            console.warn(`WalletConnectionHandler Warning: Missing or empty ${envVarName}. Using default: ${defaultUrl}.`);
             return defaultUrl;
         }
 
-        return url;
+        return trimmedUrl;
     }
 
     // TODO - check for non-empty string
     static #getMetadataUrl() {
+        if (typeof window !== 'undefined' && window.location?.origin) {
+            return window.location.origin;
+        }
+
         const url = import.meta.env.VITE_APP_URL;
+        const trimmedUrl = typeof url === 'string' ? url.trim() : '';
 
-        if (!url) {
+        if (!trimmedUrl) {
             console.warn('WalletConnectionHandler Warning: Missing app URL configuration.');
-
-            if (typeof window !== 'undefined' && window.location?.origin) {
-                return window.location.origin;
-            }
-
             return 'http://localhost:3000';
         }
 
-        return url.trim();
+        return trimmedUrl;
     }
 
     static #getNetworks() {
@@ -201,19 +200,36 @@ export class WalletConnectionHandler {
     }
 
     // TODO - only need to do once and store statically
+    static #getRpcEndpoints() {
+        if (WalletConnectionHandler.#rpcEndpoints) {
+            return WalletConnectionHandler.#rpcEndpoints;
+        }
+
+        WalletConnectionHandler.#rpcEndpoints = {
+            [base.id]: WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0]),
+            [baseSepolia.id]: WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])
+        };
+
+        return WalletConnectionHandler.#rpcEndpoints;
+    }
+
     static #buildRpcUrls() {
         console.log('WalletConnectionHandler - Building RPC URLs.');
 
+        const rpcEndpoints = WalletConnectionHandler.#getRpcEndpoints();
+
         return {
-            [base.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])],
-            [baseSepolia.id]: [WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0])]
+            [WalletConnectionHandler.#baseMainnetCaipChainId]: [{ url: rpcEndpoints[base.id] }],
+            [WalletConnectionHandler.#baseSepoliaCaipChainId]: [{ url: rpcEndpoints[baseSepolia.id] }]
         };
     }
 
     static #buildTransports() {
+        const rpcEndpoints = WalletConnectionHandler.#getRpcEndpoints();
+
         return {
-            [base.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_MAINNET_RPC_URL', base.rpcUrls.default.http[0])),
-            [baseSepolia.id]: http(WalletConnectionHandler.#getRpcUrl('VITE_BASE_SEPOLIA_RPC_URL', baseSepolia.rpcUrls.default.http[0]))
+            [base.id]: http(rpcEndpoints[base.id]),
+            [baseSepolia.id]: http(rpcEndpoints[baseSepolia.id])
         };
     }
 
