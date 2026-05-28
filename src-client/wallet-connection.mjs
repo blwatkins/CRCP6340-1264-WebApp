@@ -130,8 +130,7 @@ function decorateWagmiAdapter() {
                 address: account.address ?? null,
                 isConnected: account.isConnected,
                 connector: account.connector?.name ?? null,
-                chainId: account.chainId ?? null,
-            });
+                chainId: account.chainId ?? null
         }
     });
 
