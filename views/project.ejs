@@ -8,15 +8,17 @@
     <div class="row g-4 m-2">
         <div class="col-12 col-md-6">
             <h2 class="heading text-center">Preview</h2>
-            <div class="rounded-4 project-preview mx-auto" style="background: <%= bgColor %>;">
-                &nbsp;
+            <div class="project-preview mx-auto">
+                <img src="<%= imageUrl %>" class="w-100 rounded-3" alt="<%= title %> project thumbnail image.">
             </div>
         </div>
         <div class="col-12 col-md-6">
-            <div class="mb-3">
-                <span class="heading fs-3">Description: </span>
-                <span><%= description %></span>
-            </div>
+            <% if (description) { %>
+                <div class="mb-3">
+                    <span class="heading fs-3">Description: </span>
+                    <span><%= description %></span>
+                </div>
+            <% } %>
         </div>
     </div>
 </main>
