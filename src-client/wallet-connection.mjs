@@ -38,6 +38,10 @@ export class WalletConnectionHandler {
 
     static #rpcUrlConfig;
 
+    static #metadataUrl;
+
+    static #hasLoggedOriginMismatchWarning = false;
+
     static #isWagmiAdapterDecorated = false;
 
     static #wagmiAdapter;
@@ -175,12 +179,23 @@ export class WalletConnectionHandler {
     static #getRequiredEnvVar(envVarName, errorMessage) {
         const value = import.meta.env[envVarName];
 
-        if (typeof value !== 'string' || value.trim().length === 0) {
-            console.error(`WalletConnectionHandler Error: ${errorMessage}`);
+        if (value === undefined || value === null) {
+            console.error(`WalletConnectionHandler Error: ${errorMessage} Value is not defined.`);
             return undefined;
         }
 
-        return value.trim();
+        if (typeof value !== 'string') {
+            console.error(`WalletConnectionHandler Error: ${errorMessage} Value must be a string.`);
+            return undefined;
+        }
+
+        const trimmedValue = value.trim();
+        if (trimmedValue.length === 0) {
+            console.error(`WalletConnectionHandler Error: ${errorMessage} Value cannot be empty.`);
+            return undefined;
+        }
+
+        return trimmedValue;
     }
 
     static #getRpcUrlConfig() {
@@ -210,6 +225,10 @@ export class WalletConnectionHandler {
     }
 
     static #getMetadataUrl() {
+        if (WalletConnectionHandler.#metadataUrl) {
+            return WalletConnectionHandler.#metadataUrl;
+        }
+
         const appUrl = WalletConnectionHandler.#getRequiredEnvVar(
             'VITE_APP_URL',
             'Missing VITE_APP_URL configuration. Use your exact localhost origin, for example: http://localhost:3000.'
@@ -234,11 +253,16 @@ export class WalletConnectionHandler {
 
         const normalizedOrigin = parsedUrl.origin;
 
-        if (typeof window !== 'undefined' && window.location?.origin && window.location.origin !== normalizedOrigin) {
+        if (!WalletConnectionHandler.#hasLoggedOriginMismatchWarning
+            && (typeof window !== 'undefined'
+                && window.location?.origin
+                && window.location.origin !== normalizedOrigin)) {
             console.warn(`WalletConnectionHandler Warning: VITE_APP_URL (${normalizedOrigin}) does not match current origin (${window.location.origin}). Ensure this exact origin is allowed in your Reown AppKit dashboard.`);
+            WalletConnectionHandler.#hasLoggedOriginMismatchWarning = true;
         }
 
-        return normalizedOrigin;
+        WalletConnectionHandler.#metadataUrl = normalizedOrigin;
+        return WalletConnectionHandler.#metadataUrl;
     }
 
     static #getNetworks() {
