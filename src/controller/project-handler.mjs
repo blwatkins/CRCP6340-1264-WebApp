@@ -20,22 +20,22 @@
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
 import { StringUtility } from '../../src-shared/string-utility.mjs';
-// import { Project } from '../model/project.mjs';
+
+import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
      * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
-    static getProjects() {
-        // return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
-        return [];
+    static async getProjects() {
+        return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
     }
 
     /**
      * @return {number[]}
      */
-    static getProjectIds(sort = false) {
-        const ids = ProjectHandler.getProjects().map(project => project.id);
+    static async getProjectIds(sort = false) {
+        const ids = (await ProjectHandler.getProjects()).map(project => project.id);
 
         if (sort) {
             ids.sort((a, b) => a - b);
@@ -48,12 +48,12 @@ export class ProjectHandler {
      * @param {number} id
      * @returns {{id: number, title: string, description: string, bgColor: string}|undefined}
      */
-    static getProject(id) {
+    static async getProject(id) {
         if (!NumberUtility.isPositiveInteger(id)) {
             return undefined;
         }
 
-        return ProjectHandler.getProjects().find(project => project.id === id);
+        return (await ProjectHandler.getProjects()).find(project => project.id === id);
     }
 
     /**
@@ -81,8 +81,10 @@ export class ProjectHandler {
             return false;
         }
 
-        if (project.description !== undefined && !StringUtility.isNonEmptyString(project.description)) {
-            return false;
+        if (project.description) {
+            if (!StringUtility.isNonEmptyString(project.description)) {
+                return false;
+            }
         }
 
         return (typeof project.isActive === 'boolean');
