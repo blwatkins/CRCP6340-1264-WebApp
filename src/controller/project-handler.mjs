@@ -28,7 +28,7 @@ export class ProjectHandler {
      * @returns {{id: number, title: string, description: string, bgColor: string}[]}
      */
     static async getProjects() {
-        return (await Project.getAllProjects()).filter(project => ProjectHandler.isValidProject(project));
+        return await Project.getAllProjects();
     }
 
     /**
