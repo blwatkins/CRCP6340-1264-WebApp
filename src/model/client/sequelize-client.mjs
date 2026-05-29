@@ -26,15 +26,17 @@ import { StringUtility } from '../../../src-shared/string-utility.mjs';
 
 export class SequelizeClient {
     /**
-     * @type {boolean}
-     */
-    static isAuthenticated = false;
-
-    /**
      * @throws {Error} - SequelizeClient is a static class and cannot be instantiated.
      */
     constructor() {
         throw new Error('SequelizeClient is a static class and cannot be instantiated.');
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    static get isAuthenticated() {
+        return isAuthenticated;
     }
 
     /**
@@ -57,24 +59,6 @@ export class SequelizeClient {
      */
     static get sequelizeNotAuthenticatedErrorMessage() {
         return 'SequelizeClient is not authenticated.';
-    }
-
-    /**
-     * @returns {Promise<void>}
-     */
-    static async init() {
-        if (!SequelizeClient.sequelize) {
-            console.error(SequelizeClient.sequelizeNotDefinedErrorMessage);
-            return;
-        }
-
-        try {
-            await SequelizeClient.sequelize.authenticate();
-            SequelizeClient.isAuthenticated = true;
-            console.debug('SequelizeClient initialized and validated.');
-        } catch (error) {
-            console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
-        }
     }
 
     /**
@@ -136,10 +120,29 @@ export class SequelizeClient {
  */
 let sequelize;
 
+/**
+ * @type {boolean}
+ */
+let isAuthenticated = false;
+
 if (SequelizeClient.hasValidConfiguration()) {
     const sequelizeConfig = SequelizeClient.buildSequelizeConfig();
 
     if (sequelizeConfig) {
         sequelize = new Sequelize(sequelizeConfig);
+    }
+
+    if (sequelize) {
+        sequelize.authenticate()
+            .then(() => {
+                isAuthenticated = true;
+                console.debug('SequelizeClient initialized and validated.');
+            })
+            .catch((error) => {
+                isAuthenticated = false;
+                console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
+            });
+    } else {
+        console.error(SequelizeClient.sequelizeNotDefinedErrorMessage);
     }
 }
