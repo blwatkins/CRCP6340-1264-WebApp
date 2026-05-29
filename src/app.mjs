@@ -140,7 +140,7 @@ app.get('/project/:id', async (request, response, next) => {
 
     const project = await ProjectHandler.getProject(id);
 
-    if (!project || !Project.isValidProject(project)) {
+    if (!project) {
         response.status(404);
         next();
         return;
