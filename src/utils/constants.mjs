@@ -30,7 +30,7 @@ const DEFAULT_PORT = 3000;
 /**
  * @type {number}
  */
-const MIN_PORT = 0;
+const MIN_PORT = 1;
 
 /**
  * @type {number}

@@ -43,10 +43,10 @@ export const app = express();
 
 app.disable('x-powered-by');
 
+app.set('trust proxy', Constants.trustProxy);
 app.use(limiter);
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
-app.set('trust proxy', Constants.trustProxy);
 app.set('view engine', 'ejs');
 
 MailClient.init()
