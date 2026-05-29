@@ -49,7 +49,6 @@ export class SequelizeClient {
 
     /**
      * @returns {Promise<void>}
-     * @throws {Error} If sequelize authentication fails.
      */
     static async init() {
         if (!SequelizeClient.sequelize) {
@@ -66,7 +65,7 @@ export class SequelizeClient {
     }
 
     /**
-     * @return {Sequelize}
+     * @returns {Sequelize}
      */
     static get sequelize() {
         return sequelize;
@@ -107,19 +106,15 @@ export class SequelizeClient {
     }
 
     static buildSequelizeConfig() {
-        try {
-            return {
-                dialect: 'mysql',
-                logging: false,
-                host: process.env.MYSQL_HOST,
-                port: Number.parseInt(process.env.MYSQL_PORT, 10),
-                username: process.env.MYSQL_USERNAME,
-                database: process.env.MYSQL_DATABASE,
-                password: process.env.MYSQL_PASSWORD
-            };
-        } catch {
-            return undefined;
-        }
+        return {
+            dialect: 'mysql',
+            logging: false,
+            host: process.env.MYSQL_HOST,
+            port: Number.parseInt(process.env.MYSQL_PORT, 10),
+            username: process.env.MYSQL_USERNAME,
+            database: process.env.MYSQL_DATABASE,
+            password: process.env.MYSQL_PASSWORD
+        };
     }
 }
 

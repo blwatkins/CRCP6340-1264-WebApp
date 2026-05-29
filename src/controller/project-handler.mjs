@@ -25,14 +25,14 @@ import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
-     * @returns {{id: number, title: string, description: string, bgColor: string}[]}
+     * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}[]}
      */
     static async getProjects() {
         return await Project.getAllProjects();
     }
 
     /**
-     * @return {number[]}
+     * @returns {number[]}
      */
     static async getProjectIds(sort = false) {
         const ids = (await ProjectHandler.getProjects()).map(project => project.id);
@@ -46,7 +46,7 @@ export class ProjectHandler {
 
     /**
      * @param {number} id
-     * @returns {{id: number, title: string, description: string, bgColor: string}|undefined}
+     * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
      */
     static async getProject(id) {
         if (!NumberUtility.isPositiveInteger(id)) {
@@ -58,7 +58,7 @@ export class ProjectHandler {
 
     /**
      * @param {unknown} project
-     * @return {boolean}
+     * @returns {boolean}
      */
     static isValidProject(project) {
         if (!project) {

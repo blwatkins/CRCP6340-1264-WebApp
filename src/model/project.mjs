@@ -74,14 +74,7 @@ if (sequelize) {
 
 export class Project extends SequelizeClient {
     /**
-     * @inheritDoc
-     */
-    constructor() {
-        super();
-    }
-
-    /**
-     * @return {Promise<({id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}|undefined)[]>}
+     * @returns {Promise<({id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}|undefined)[]>}
      */
     static async getAllProjects() {
         if (!Project.sequelize) {
@@ -102,7 +95,7 @@ export class Project extends SequelizeClient {
 
     /**
      * @param queryResult
-     * @return {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
+     * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
      */
     static #queryResultToProject(queryResult) {
         const project = {
