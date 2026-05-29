@@ -31,6 +31,7 @@ import { MailClient } from './mail/mail-client.mjs';
 import { SequelizeClient } from './model/client/sequelize-client.mjs';
 import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
+import { Project } from './model/project.mjs';
 
 const limiter = rateLimit({
     windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
@@ -49,12 +50,12 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 app.set('view engine', 'ejs');
 
-MailClient.init()
-    .catch((error) => {
-        console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
-    });
-
-SequelizeClient.init().then();
+try {
+    await MailClient.init();
+    await SequelizeClient.init();
+} catch (error) {
+    console.error(ErrorUtility.buildErrorMessage('App Initialization Error', error));
+}
 
 if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {
@@ -138,7 +139,7 @@ app.get('/project/:id', async (request, response, next) => {
 
     const project = await ProjectHandler.getProject(id);
 
-    if (!project || !ProjectHandler.isValidProject(project)) {
+    if (!project || !Project.isValidProject(project)) {
         response.status(404);
         next();
         return;
