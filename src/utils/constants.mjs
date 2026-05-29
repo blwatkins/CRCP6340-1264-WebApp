@@ -22,6 +22,21 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 
+/**
+ * @type {number}
+ */
+const DEFAULT_PORT = 3000;
+
+/**
+ * @type {number}
+ */
+const MIN_PORT = 0;
+
+/**
+ * @type {number}
+ */
+const MAX_PORT = 65535;
+
 export class Constants {
     /**
      * @type {string}
@@ -56,7 +71,13 @@ export class Constants {
      * @returns {number}
      */
     static get port() {
-        return 3000;
+        let port = Number.parseInt(process.env.PORT, 10);
+
+        if (Number.isNaN(port) || port < MIN_PORT || port > MAX_PORT) {
+            return DEFAULT_PORT;
+        }
+
+        return port;
     }
 
     /**
