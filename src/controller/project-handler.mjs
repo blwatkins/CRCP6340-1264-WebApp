@@ -81,10 +81,9 @@ export class ProjectHandler {
             return false;
         }
 
-        if (project.description) {
-            if (!StringUtility.isNonEmptyString(project.description)) {
-                return false;
-            }
+        if (project.description !== null && project.description !== undefined
+            && !StringUtility.isNonEmptyString(project.description)) {
+            return false;
         }
 
         return (typeof project.isActive === 'boolean');
