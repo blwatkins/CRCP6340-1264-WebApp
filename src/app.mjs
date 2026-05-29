@@ -68,8 +68,8 @@ if (Constants.requestLoggingEnabled) {
     });
 }
 
-app.use((req, res, next) => {
-    res.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+app.use((request, response, next) => {
+    response.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
     next();
 });
 
