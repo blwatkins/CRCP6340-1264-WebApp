@@ -76,7 +76,7 @@ if (sequelize) {
 
 export class Project extends SequelizeClient {
     /**
-     * @returns {Promise<({id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}|undefined)[]>}
+     * @returns {Promise<{id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}[]>}
      */
     static async getAllProjects() {
         if (!Project.sequelize) {
