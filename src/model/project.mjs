@@ -65,7 +65,7 @@ if (sequelize) {
             isActive: {
                 type: DataTypes.BOOLEAN,
                 allowNull: false,
-                default: false
+                defaultValue: false
             }
         },
         { sequelize, modelName: 'project', createdAt: false, updatedAt: false }
