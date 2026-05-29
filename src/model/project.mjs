@@ -137,7 +137,7 @@ export class Project extends SequelizeClient {
             return undefined;
         } catch (error) {
             console.error(error);
-            return [];
+            return undefined;
         }
     }
 
