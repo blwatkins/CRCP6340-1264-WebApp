@@ -188,7 +188,9 @@ export class Project extends SequelizeClient {
             return false;
         }
 
-        if (project.description !== null && project.description !== undefined
+        if (project.description !== null
+            && project.description !== undefined
+            && project.description !== ''
             && !StringUtility.isNonEmptyString(project.description)) {
             return false;
         }
