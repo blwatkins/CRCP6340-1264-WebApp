@@ -31,6 +31,7 @@ export class ProjectHandler {
     }
 
     /**
+     * @param {boolean} sort
      * @returns {number[]}
      */
     static async getProjectIds(sort = false) {

@@ -52,10 +52,11 @@ app.set('view engine', 'ejs');
 
 try {
     await MailClient.init();
-    await SequelizeClient.init();
 } catch (error) {
-    console.error(ErrorUtility.buildErrorMessage('App Initialization Error', error));
+    console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
 }
+
+await SequelizeClient.init();
 
 if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {
