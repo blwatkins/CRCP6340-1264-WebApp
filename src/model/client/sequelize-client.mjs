@@ -26,6 +26,11 @@ import { StringUtility } from '../../../src-shared/string-utility.mjs';
 
 export class SequelizeClient {
     /**
+     * @type {boolean}
+     */
+    static isAuthenticated = false;
+
+    /**
      * @throws {Error} - SequelizeClient is a static class and cannot be instantiated.
      */
     constructor() {
@@ -48,6 +53,13 @@ export class SequelizeClient {
     }
 
     /**
+     * @returns {string}
+     */
+    static get sequelizeNotAuthenticatedErrorMessage() {
+        return 'SequelizeClient is not authenticated.';
+    }
+
+    /**
      * @returns {Promise<void>}
      */
     static async init() {
@@ -58,6 +70,7 @@ export class SequelizeClient {
 
         try {
             await SequelizeClient.sequelize.authenticate();
+            SequelizeClient.isAuthenticated = true;
             console.debug('SequelizeClient initialized and validated.');
         } catch (error) {
             console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
