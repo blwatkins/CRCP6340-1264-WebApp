@@ -20,8 +20,10 @@
 
 import { DataTypes, Model } from 'sequelize';
 
+import { NumberUtility } from '../../src-shared/number-utility.mjs';
+import { StringUtility } from '../../src-shared/string-utility.mjs';
+
 import { SequelizeClient } from './client/sequelize-client.mjs';
-import { ProjectHandler } from '../controller/project-handler.mjs';
 
 const sequelize = SequelizeClient.sequelize;
 
@@ -106,10 +108,43 @@ export class Project extends SequelizeClient {
             isActive: queryResult.isActive
         };
 
-        if (ProjectHandler.isValidProject(project)) {
+        if (Project.isValidProject(project)) {
             return project;
         }
 
         return undefined;
+    }
+
+    /**
+     * @param {unknown} project
+     * @returns {boolean}
+     */
+    static isValidProject(project) {
+        if (!project) {
+            return false;
+        }
+
+        if (typeof project !== 'object') {
+            return false;
+        }
+
+        if (!NumberUtility.isPositiveInteger(project.id)) {
+            return false;
+        }
+
+        if (!StringUtility.isSingleLineTrimmedString(project.title)) {
+            return false;
+        }
+
+        if (!StringUtility.isSingleLineTrimmedString(project.imageUrl)) {
+            return false;
+        }
+
+        if (project.description !== null && project.description !== undefined
+            && !StringUtility.isNonEmptyString(project.description)) {
+            return false;
+        }
+
+        return (typeof project.isActive === 'boolean');
     }
 }

@@ -19,7 +19,6 @@
  */
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
-import { StringUtility } from '../../src-shared/string-utility.mjs';
 
 import { Project } from '../model/project.mjs';
 
@@ -54,38 +53,5 @@ export class ProjectHandler {
         }
 
         return (await ProjectHandler.getProjects()).find(project => project.id === id);
-    }
-
-    /**
-     * @param {unknown} project
-     * @returns {boolean}
-     */
-    static isValidProject(project) {
-        if (!project) {
-            return false;
-        }
-
-        if (typeof project !== 'object') {
-            return false;
-        }
-
-        if (!NumberUtility.isPositiveInteger(project.id)) {
-            return false;
-        }
-
-        if (!StringUtility.isSingleLineTrimmedString(project.title)) {
-            return false;
-        }
-
-        if (!StringUtility.isSingleLineTrimmedString(project.imageUrl)) {
-            return false;
-        }
-
-        if (project.description !== null && project.description !== undefined
-            && !StringUtility.isNonEmptyString(project.description)) {
-            return false;
-        }
-
-        return (typeof project.isActive === 'boolean');
     }
 }

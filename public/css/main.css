@@ -85,7 +85,6 @@ html {
 }
 
 .project-card-top {
-    /*height: 20rem;*/
     aspect-ratio: 1 / 1;
     background-color: var(--accent-1);
 }

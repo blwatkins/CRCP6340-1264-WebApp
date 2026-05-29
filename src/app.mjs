@@ -54,10 +54,7 @@ MailClient.init()
         console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
     });
 
-SequelizeClient.init()
-    .catch((error) => {
-        console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
-    });
+SequelizeClient.init().then();
 
 if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {

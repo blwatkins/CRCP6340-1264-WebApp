@@ -57,7 +57,7 @@ export class SequelizeClient {
         }
 
         try {
-            await sequelize.authenticate();
+            await SequelizeClient.sequelize.authenticate();
             console.debug('SequelizeClient initialized and validated.');
         } catch (error) {
             console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
