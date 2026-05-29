@@ -116,6 +116,10 @@ export class Project extends SequelizeClient {
         }
     }
 
+    /**
+     * @param {number} id
+     * @returns {Promise<{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined>}
+     */
     static async getProjectById(id) {
         if (!Project.sequelize) {
             console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
