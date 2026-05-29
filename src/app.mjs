@@ -18,6 +18,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import cors from 'cors';
 import express from 'express';
 
 import { rateLimit } from 'express-rate-limit';
@@ -44,6 +45,7 @@ export const app = express();
 app.disable('x-powered-by');
 
 app.use(limiter);
+app.use(cors());
 app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 app.set('view engine', 'ejs');

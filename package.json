@@ -41,6 +41,7 @@
     "@reown/appkit-adapter-wagmi": "^1.8.20",
     "@wagmi/connectors": "^6.2.0",
     "@wagmi/core": "^2.22.1",
+    "cors": "^2.8.6",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
