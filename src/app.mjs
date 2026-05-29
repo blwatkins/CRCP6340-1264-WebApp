@@ -28,7 +28,6 @@ import { StringUtility } from '../src-shared/string-utility.mjs';
 
 import { ProjectHandler } from './controller/project-handler.mjs';
 import { MailClient } from './mail/mail-client.mjs';
-import { SequelizeClient } from './model/client/sequelize-client.mjs';
 import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
 
@@ -49,13 +48,10 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 app.set('view engine', 'ejs');
 
-try {
-    await MailClient.init();
-} catch (error) {
-    console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
-}
-
-await SequelizeClient.init();
+MailClient.init()
+    .catch((error) => {
+        console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
+    });
 
 if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {

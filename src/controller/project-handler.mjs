@@ -20,14 +20,14 @@
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
 
-import { Project } from '../model/project.mjs';
+import { ProjectClient } from '../model/project-client.mjs';
 
 export class ProjectHandler {
     /**
      * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}[]}
      */
     static async getProjects() {
-        return await Project.getAllProjects();
+        return await ProjectClient.getAllProjects();
     }
 
     /**
@@ -35,7 +35,7 @@ export class ProjectHandler {
      * @returns {number[]}
      */
     static async getProjectIds(sort = false) {
-        const ids = await Project.getIds();
+        const ids = await ProjectClient.getIds();
 
         if (sort) {
             ids.sort((a, b) => a - b);
@@ -53,6 +53,6 @@ export class ProjectHandler {
             return undefined;
         }
 
-        return await Project.getProjectById(id);
+        return await ProjectClient.getProjectById(id);
     }
 }

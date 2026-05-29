@@ -74,20 +74,25 @@ if (sequelize) {
     );
 }
 
-export class Project extends SequelizeClient {
+export class ProjectClient extends SequelizeClient {
     /**
      * @returns {Promise<{id: number, title: string, description: (string|null|undefined), imageUrl: string, isActive: boolean}[]>}
      */
     static async getAllProjects() {
-        if (!Project.sequelize) {
-            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+        if (!ProjectClient.sequelize) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotDefinedErrorMessage}`);
+            return [];
+        }
+
+        if (!ProjectClient.isAuthenticated) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotAuthenticatedErrorMessage}`);
             return [];
         }
 
         try {
             const results = await ProjectModel.findAll();
 
-            return results.map(result => Project.#queryResultToProject(result))
+            return results.map(result => ProjectClient.#queryResultToProject(result))
                 .filter(project => project !== undefined);
         } catch (error) {
             console.error(error);
@@ -99,8 +104,13 @@ export class Project extends SequelizeClient {
      * @return {Promise<number[]>}
      */
     static async getIds() {
-        if (!Project.sequelize) {
-            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+        if (!ProjectClient.sequelize) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotDefinedErrorMessage}`);
+            return [];
+        }
+
+        if (!ProjectClient.isAuthenticated) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotAuthenticatedErrorMessage}`);
             return [];
         }
 
@@ -121,8 +131,13 @@ export class Project extends SequelizeClient {
      * @returns {Promise<{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined>}
      */
     static async getProjectById(id) {
-        if (!Project.sequelize) {
-            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+        if (!ProjectClient.sequelize) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotDefinedErrorMessage}`);
+            return undefined;
+        }
+
+        if (!ProjectClient.isAuthenticated) {
+            console.error(`Unable to perform query. ${ProjectClient.sequelizeNotAuthenticatedErrorMessage}`);
             return undefined;
         }
 
@@ -132,7 +147,7 @@ export class Project extends SequelizeClient {
 
         try {
             const result = await ProjectModel.findByPk(id);
-            return Project.#queryResultToProject(result);
+            return ProjectClient.#queryResultToProject(result);
         } catch (error) {
             console.error(error);
             return undefined;
@@ -156,7 +171,7 @@ export class Project extends SequelizeClient {
             isActive: queryResult.isActive
         };
 
-        if (Project.isValidProject(project)) {
+        if (ProjectClient.isValidProject(project)) {
             return project;
         }
 

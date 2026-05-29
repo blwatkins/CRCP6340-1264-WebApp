@@ -33,6 +33,13 @@ export class SequelizeClient {
     }
 
     /**
+     * @returns {boolean}
+     */
+    static get isAuthenticated() {
+        return isAuthenticated;
+    }
+
+    /**
      * @returns {string}
      */
     static get appConfigErrorMessage() {
@@ -48,20 +55,10 @@ export class SequelizeClient {
     }
 
     /**
-     * @returns {Promise<void>}
+     * @returns {string}
      */
-    static async init() {
-        if (!SequelizeClient.sequelize) {
-            console.error(SequelizeClient.sequelizeNotDefinedErrorMessage);
-            return;
-        }
-
-        try {
-            await SequelizeClient.sequelize.authenticate();
-            console.debug('SequelizeClient initialized and validated.');
-        } catch (error) {
-            console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
-        }
+    static get sequelizeNotAuthenticatedErrorMessage() {
+        return 'SequelizeClient is not authenticated.';
     }
 
     /**
@@ -123,10 +120,29 @@ export class SequelizeClient {
  */
 let sequelize;
 
+/**
+ * @type {boolean}
+ */
+let isAuthenticated = false;
+
 if (SequelizeClient.hasValidConfiguration()) {
     const sequelizeConfig = SequelizeClient.buildSequelizeConfig();
 
     if (sequelizeConfig) {
         sequelize = new Sequelize(sequelizeConfig);
+    }
+
+    if (sequelize) {
+        sequelize.authenticate()
+            .then(() => {
+                isAuthenticated = true;
+                console.debug('SequelizeClient initialized and validated.');
+            })
+            .catch((error) => {
+                isAuthenticated = false;
+                console.error(ErrorUtility.buildErrorMessage('SequelizeClient Initialization Error', error));
+            });
+    } else {
+        console.error(SequelizeClient.sequelizeNotDefinedErrorMessage);
     }
 }
