@@ -77,7 +77,7 @@ export class Constants {
      * @returns {number}
      */
     static get requestsLimit() {
-        return 100;
+        return 1_000;
     }
 
     /**

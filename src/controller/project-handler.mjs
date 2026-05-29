@@ -19,47 +19,23 @@
  */
 
 import { NumberUtility } from '../../src-shared/number-utility.mjs';
-import { StringUtility } from '../../src-shared/string-utility.mjs';
 
-const loremIpsumPlaceholder = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Proin convallis gravida nibh. Sed tincidunt sapien sit amet id.';
+import { Project } from '../model/project.mjs';
 
 export class ProjectHandler {
     /**
-     * @type {{id: number, title: string, description: string, bgColor: string}[]}
+     * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}[]}
      */
-    static #projects = [
-        {
-            id: 1,
-            title: 'Project 1',
-            description: loremIpsumPlaceholder,
-            bgColor: '#65AA17'
-        },
-        {
-            id: 2,
-            title: 'Project 2',
-            description: loremIpsumPlaceholder,
-            bgColor: '#72C5AB'
-        },
-        {
-            id: 4,
-            title: 'Project 4',
-            description: loremIpsumPlaceholder,
-            bgColor: '#DA9DCF'
-        }
-    ];
-
-    /**
-     * @returns {{id: number, title: string, description: string, bgColor: string}[]}
-     */
-    static getProjects() {
-        return ProjectHandler.#projects.filter(project => ProjectHandler.isValidProject(project));
+    static async getProjects() {
+        return await Project.getAllProjects();
     }
 
     /**
-     * @return {number[]}
+     * @param {boolean} sort
+     * @returns {number[]}
      */
-    static getProjectIds(sort = false) {
-        const ids = ProjectHandler.getProjects().map(project => project.id);
+    static async getProjectIds(sort = false) {
+        const ids = await Project.getIds();
 
         if (sort) {
             ids.sort((a, b) => a - b);
@@ -70,41 +46,13 @@ export class ProjectHandler {
 
     /**
      * @param {number} id
-     * @returns {{id: number, title: string, description: string, bgColor: string}|undefined}
+     * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
      */
-    static getProject(id) {
+    static async getProject(id) {
         if (!NumberUtility.isPositiveInteger(id)) {
             return undefined;
         }
 
-        return ProjectHandler.getProjects().find(project => project.id === id);
-    }
-
-    /**
-     * @param {unknown} project
-     * @return {boolean}
-     */
-    static isValidProject(project) {
-        if (!project) {
-            return false;
-        }
-
-        if (typeof project !== 'object') {
-            return false;
-        }
-
-        if (!NumberUtility.isPositiveInteger(project.id)) {
-            return false;
-        }
-
-        if (!StringUtility.isSingleLineTrimmedString(project.title)) {
-            return false;
-        }
-
-        if (!StringUtility.isNonEmptyString(project.description)) {
-            return false;
-        }
-
-        return StringUtility.isHexColorString(project.bgColor);
+        return await Project.getProjectById(id);
     }
 }

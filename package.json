@@ -23,10 +23,10 @@
     "lint:client": "eslint -c eslint.config.client.mjs ./src-client",
     "lint:server": "eslint -c eslint.config.server.mjs .",
     "lint:all": "npm run lint:client && npm run lint:server",
-    "build": "webpack --mode production",
-    "build:watch": "webpack --mode production --watch",
-    "build:dev": "webpack --mode development",
-    "build:dev:watch": "webpack --mode development --watch",
+    "build": "vite build",
+    "build:watch": "vite build --watch",
+    "build:dev": "vite build --mode development",
+    "build:dev:watch": "vite build --mode development --watch",
     "build:check": "npm run build:dev && npm run build",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -37,24 +37,31 @@
   },
   "dependencies": {
     "@dotenvx/dotenvx": "^1.69.1",
+    "@reown/appkit": "^1.8.20",
+    "@reown/appkit-adapter-wagmi": "^1.8.20",
+    "@wagmi/connectors": "^6.2.0",
+    "@wagmi/core": "^2.22.1",
     "ejs": "^6.0.1",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.1",
-    "nodemailer": "^8.0.9"
+    "express-rate-limit": "^8.5.2",
+    "mysql2": "^3.22.4",
+    "nodemailer": "^8.0.9",
+    "sequelize": "^6.37.8",
+    "viem": "^2.47.0",
+    "wagmi": "^2.19.5"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@stylistic/eslint-plugin": "^5.10.0",
     "@vitest/coverage-v8": "^4.1.7",
-    "@vitest/ui": "^4.1.6",
-    "eslint": "^10.3.0",
+    "@vitest/ui": "^4.1.7",
+    "eslint": "^10.4.0",
     "eslint-plugin-es-x": "^9.6.0",
     "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-security": "^4.0.0",
     "globals": "^17.6.0",
     "nodemon": "^3.1.14",
-    "vitest": "^4.1.6",
-    "webpack": "^5.107.2",
-    "webpack-cli": "^7.0.2"
+    "vite": "^8.0.14",
+    "vitest": "^4.1.7"
   }
 }

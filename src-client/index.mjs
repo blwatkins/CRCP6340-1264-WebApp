@@ -19,6 +19,9 @@
  */
 
 import { FaveColorFormHandler } from './favorite-color-form.mjs';
+import { initAppKit } from './wallet-connection.mjs';
+
+initAppKit();
 
 document.addEventListener('DOMContentLoaded', () => {
     if (document.getElementById(FaveColorFormHandler.primaryElementId)) {

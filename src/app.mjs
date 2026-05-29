@@ -28,6 +28,7 @@ import { StringUtility } from '../src-shared/string-utility.mjs';
 
 import { ProjectHandler } from './controller/project-handler.mjs';
 import { MailClient } from './mail/mail-client.mjs';
+import { SequelizeClient } from './model/client/sequelize-client.mjs';
 import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
 
@@ -48,10 +49,13 @@ app.use(express.json({ limit: '1mb' }));
 app.use(express.static(Constants.publicDir));
 app.set('view engine', 'ejs');
 
-MailClient.init()
-    .catch((error) => {
-        console.error(ErrorUtility.buildErrorMessage('Initialization Error', error));
-    });
+try {
+    await MailClient.init();
+} catch (error) {
+    console.error(ErrorUtility.buildErrorMessage('MailClient Initialization Error', error));
+}
+
+await SequelizeClient.init();
 
 if (Constants.requestLoggingEnabled) {
     app.use((request, response, next) => {
@@ -64,9 +68,14 @@ if (Constants.requestLoggingEnabled) {
     });
 }
 
-app.get('/', (request, response) => {
+app.use((request, response, next) => {
+    response.setHeader('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+    next();
+});
+
+app.get('/', async (request, response) => {
     const navBarLinks = getNavBarLinks('home');
-    const projectIds = ProjectHandler.getProjectIds();
+    const projectIds = await ProjectHandler.getProjectIds();
     let id = 0;
 
     if (projectIds.length > 0) {
@@ -74,7 +83,7 @@ app.get('/', (request, response) => {
         id = projectIds[index];
     }
 
-    const project = ProjectHandler.getProject(id);
+    const project = await ProjectHandler.getProject(id);
 
     response.render('index.ejs', {
         pageData: {
@@ -97,19 +106,21 @@ app.get('/favorite-color', (request, response) => {
     });
 });
 
-app.get('/projects', (request, response) => {
+app.get('/projects', async (request, response) => {
     const navBarLinks = getNavBarLinks('projects');
+    const projects = await ProjectHandler.getProjects();
 
     response.render('projects.ejs', {
         pageData: {
             title: "Brittni's Summer 2026 NFT Projects",
             description: "Brittni's NFT Projects for CRCP 6340; SMU Summer 2026 term.",
             navBarLinks
-        }
+        },
+        projects
     });
 });
 
-app.get('/project/:id', (request, response, next) => {
+app.get('/project/:id', async (request, response, next) => {
     const requestId = request.params.id;
 
     if (!requestId) {
@@ -126,9 +137,9 @@ app.get('/project/:id', (request, response, next) => {
         return;
     }
 
-    const project = ProjectHandler.getProject(id);
+    const project = await ProjectHandler.getProject(id);
 
-    if (!project || !ProjectHandler.isValidProject(project)) {
+    if (!project) {
         response.status(404);
         next();
         return;

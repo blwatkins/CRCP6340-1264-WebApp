@@ -81,12 +81,12 @@ html {
 }
 
 .project-card {
-    width: 20rem;
+    width: min(20rem, 90%);
 }
 
 .project-card-top {
-    height: 20rem;
-    background-color: #00000000;
+    aspect-ratio: 1 / 1;
+    background-color: var(--accent-1);
 }
 
 .project-preview {
