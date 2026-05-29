@@ -81,6 +81,24 @@ export class Constants {
     }
 
     /**
+     * @return {number|boolean}
+     */
+    static get trustProxy() {
+        const trustProxy = process.env.TRUST_PROXY;
+        const digitsRegex = /^\d+$/;
+
+        if (trustProxy === 'true') {
+            return true;
+        }
+
+        if (typeof trustProxy === 'string' && digitsRegex.test(trustProxy)) {
+            return Number.parseInt(trustProxy, 10);
+        }
+
+        return false;
+    }
+
+    /**
      * @returns {string}
      */
     static get publicDir() {
