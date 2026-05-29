@@ -96,10 +96,60 @@ export class Project extends SequelizeClient {
     }
 
     /**
+     * @return {Promise<number[]>}
+     */
+    static async getIds() {
+        if (!Project.sequelize) {
+            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+            return [];
+        }
+
+        try {
+            const results = await ProjectModel.findAll({
+                attributes: ['id']
+            });
+
+            return results.map(result => result.id);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
+    static async getProjectById(id) {
+        if (!Project.sequelize) {
+            console.error(`Unable to perform query. ${Project.sequelizeNotDefinedErrorMessage}`);
+            return undefined;
+        }
+
+        if (!NumberUtility.isPositiveInteger(id)) {
+            return undefined;
+        }
+
+        try {
+            const result = await ProjectModel.findByPk(id);
+            const project = Project.#queryResultToProject(result);
+
+            if (Project.isValidProject(project)) {
+                return project;
+            }
+
+            return undefined;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    }
+
+    /**
      * @param queryResult
      * @returns {{id: number, title: string, description: string|null|undefined, imageUrl: string, isActive: boolean}|undefined}
      */
     static #queryResultToProject(queryResult) {
+        if (!queryResult) {
+            return undefined;
+        }
+
         const project = {
             id: queryResult.id,
             title: queryResult.title,

@@ -35,7 +35,7 @@ export class ProjectHandler {
      * @returns {number[]}
      */
     static async getProjectIds(sort = false) {
-        const ids = (await ProjectHandler.getProjects()).map(project => project.id);
+        const ids = await Project.getIds();
 
         if (sort) {
             ids.sort((a, b) => a - b);
@@ -53,6 +53,6 @@ export class ProjectHandler {
             return undefined;
         }
 
-        return (await ProjectHandler.getProjects()).find(project => project.id === id);
+        return await Project.getProjectById(id);
     }
 }
