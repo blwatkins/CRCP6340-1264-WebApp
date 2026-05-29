@@ -31,7 +31,6 @@ import { MailClient } from './mail/mail-client.mjs';
 import { SequelizeClient } from './model/client/sequelize-client.mjs';
 import { Constants } from './utils/constants.mjs';
 import { getNavBarLinks } from './utils/utils.mjs';
-import { Project } from './model/project.mjs';
 
 const limiter = rateLimit({
     windowMs: Constants.millisPerSecond * Constants.secondsPerMinute,
