@@ -128,13 +128,7 @@ export class Project extends SequelizeClient {
 
         try {
             const result = await ProjectModel.findByPk(id);
-            const project = Project.#queryResultToProject(result);
-
-            if (Project.isValidProject(project)) {
-                return project;
-            }
-
-            return undefined;
+            return Project.#queryResultToProject(result);
         } catch (error) {
             console.error(error);
             return undefined;
