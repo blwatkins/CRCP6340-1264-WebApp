@@ -18,12 +18,12 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { createAppKit, AppKit } from '@reown/appkit';
+import { createAppKit } from '@reown/appkit';
 import { base, baseSepolia, polygon, polygonAmoy } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 
+import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { StringUtility } from '../src-shared/string-utility.mjs';
-import {ErrorUtility} from "../src-shared/error-utility.mjs";
 
 function getRpcUrl(envVar, defaultUrl) {
     const url = import.meta.env[envVar];
