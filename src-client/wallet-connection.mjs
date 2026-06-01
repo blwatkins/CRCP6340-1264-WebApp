@@ -20,10 +20,9 @@
 
 import { createAppKit } from '@reown/appkit';
 import { base, baseSepolia, polygon, polygonAmoy } from '@reown/appkit/networks';
-import { WagmiAdapter } from '@reown/appkit-adapter-wagmi';
-import { watchAccount, watchChainId, watchConnections } from '@wagmi/core';
-import { http } from 'viem';
+import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 
+import { ErrorUtility } from '../src-shared/error-utility.mjs';
 import { StringUtility } from '../src-shared/string-utility.mjs';
 
 function getRpcUrl(envVar, defaultUrl) {
@@ -44,15 +43,6 @@ const rpcUrlConfig = {
     polygonAmoy: getRpcUrl('VITE_POLYGON_AMOY_RPC_URL', polygonAmoy.rpcUrls.default.http[0])
 };
 
-function buildTransports() {
-    return {
-        [base.id]: http(rpcUrlConfig.baseMainnet),
-        [baseSepolia.id]: http(rpcUrlConfig.baseSepolia),
-        [polygon.id]: http(rpcUrlConfig.polygonMainnet),
-        [polygonAmoy.id]: http(rpcUrlConfig.polygonAmoy)
-    };
-}
-
 function buildCustomRpcUrls() {
     return {
         [`eip155:${base.id}`]: [{ url: rpcUrlConfig.baseMainnet }],
@@ -64,92 +54,90 @@ function buildCustomRpcUrls() {
 
 const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
 const networks = [base, baseSepolia, polygon, polygonAmoy];
-const transports = buildTransports();
 const customRpcUrls = buildCustomRpcUrls();
 
-let wagmiAdapter;
-let appKit;
-let isAdapterDecorated = false;
+/**
+ * @type {EthersAdapter|undefined}
+ */
+let ethersAdapter;
 
-function buildWagmiAdapter() {
-    if (wagmiAdapter) {
-        console.debug('Wallet Connection - WagmiAdapter Connected.');
-        return wagmiAdapter;
+/**
+ * @type {AppKit|undefined}
+ */
+let appKit;
+
+/**
+ * @type {boolean}
+ */
+let isAppKitDecorated = false;
+
+/**
+ * @return {EthersAdapter}
+ */
+function buildEthersAdapter() {
+    if (ethersAdapter) {
+        console.debug('Wallet Connection - EthersAdapter Connected.');
+        return ethersAdapter;
     }
 
-    console.debug('Wallet Connection - Building WagmiAdapter.');
-    return new WagmiAdapter({
-        networks: networks,
-        projectId: projectId,
-        transports: transports,
-        customRpcUrls: customRpcUrls
-    });
+    console.debug('Wallet Connection - Building EthersAdapter.');
+    return ethersAdapter = new EthersAdapter();
 }
 
+/**
+ * @return {AppKit|undefined}
+ */
 function buildAppKit() {
     if (appKit) {
         console.debug('Wallet Connection - AppKit Connected.');
         return appKit;
     }
 
-    if (!wagmiAdapter) {
-        console.error('Wallet Connection - Missing WagmiAdapter.');
+    if (!ethersAdapter) {
+        console.error('Wallet Connection - Missing EthersAdapter.');
         return undefined;
     }
 
     console.debug('Wallet Connection - Building AppKit.');
-    return createAppKit({
-        adapters: [wagmiAdapter],
+    return appKit = createAppKit({
+        adapters: [ethersAdapter],
         networks: networks,
         projectId: projectId,
         customRpcUrls: customRpcUrls
     });
 }
 
-function decorateWagmiAdapter() {
-    if (!wagmiAdapter) {
-        console.error('Wallet Connection - Missing WagmiAdapter.');
-        return;
-    }
-
+function decorateAppKit() {
     if (!appKit) {
         console.error('Wallet Connection - Missing AppKit.');
         return;
     }
 
-    if (isAdapterDecorated) {
-        console.debug('Wallet Connection - WagmiAdapter is decorated.');
+    if (isAppKitDecorated) {
+        console.debug('Wallet Connection - AppKit is decorated.');
         return;
     }
 
-    console.debug('Wallet Connection - Decorating WagmiAdapter.');
+    console.debug('Wallet Connection - Decorating AppKit.');
 
-    watchAccount(wagmiAdapter.wagmiConfig, {
-        onChange: (account) => {
-            console.debug('Wallet Connection - Account Update.', {
-                address: account.address ?? null,
-                isConnected: account.isConnected,
-                connector: account.connector?.name ?? null,
-                chainId: account.chainId ?? null
-            });
-        }
+    appKit.subscribeAccount((account) => {
+        console.debug('Wallet Connection - Account Update.', {
+            address: account.address ?? null,
+            isConnected: account.status === 'connected',
+            connector: appKit.getWalletProviderType() ?? null,
+            chainId: appKit.getChainId() ?? null,
+            chainName: appKit.getCaipNetwork()?.name ?? null
+        });
     });
 
-    watchChainId(wagmiAdapter.wagmiConfig, {
-        onChange: (chainId) => {
-            console.debug('Wallet Connection - Chain Update.', { chainId });
-        }
+    appKit.subscribeNetwork((network) => {
+        console.debug('Wallet Connection - Chain Update.', {
+            chainId: network.chainId ?? null,
+            chainName: network.caipNetwork?.name ?? null
+        });
     });
 
-    watchConnections(wagmiAdapter.wagmiConfig, {
-        onChange: (connections) => {
-            console.debug('Wallet Connection - Connections Update.', {
-                totalConnections: connections.length
-            });
-        }
-    });
-
-    isAdapterDecorated = true;
+    isAppKitDecorated = true;
 }
 
 export function initAppKit() {
@@ -162,20 +150,20 @@ export function initAppKit() {
         console.debug('Wallet Connection - Project ID loaded successfully.');
         console.debug('Wallet Connection - RPC URL Configuration', rpcUrlConfig);
 
-        if (!wagmiAdapter) {
-            wagmiAdapter = buildWagmiAdapter();
+        if (!ethersAdapter) {
+            ethersAdapter = buildEthersAdapter();
         }
 
-        if (wagmiAdapter) {
+        if (ethersAdapter) {
             appKit = buildAppKit();
         }
 
         if (appKit) {
-            decorateWagmiAdapter();
+            decorateAppKit();
             return appKit;
         }
-    } catch {
-        console.error('Wallet Connection Initialization Error');
+    } catch (error) {
+        console.error(ErrorUtility.buildErrorMessage('Wallet Connection Initialization Error', error));
     }
 
     return undefined;
