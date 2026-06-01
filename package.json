@@ -38,7 +38,9 @@
   "dependencies": {
     "@dotenvx/dotenvx": "^1.70.0",
     "@reown/appkit": "^1.8.20",
+    "@reown/appkit-adapter-ethers": "^1.8.20",
     "ejs": "^6.0.1",
+    "ethers": "^6.16.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "mysql2": "^3.22.4",
