@@ -30,8 +30,8 @@ export default defineConfig({
             input: './src-client/index.mjs',
             output: {
                 entryFileNames: 'bundle.js',
-                chunkFileNames: '[name].js',
-                assetFileNames: '[name].[ext]'
+                chunkFileNames: '[name]-[hash].js',
+                assetFileNames: '[name]-[hash].[ext]'
             }
         }
     }
