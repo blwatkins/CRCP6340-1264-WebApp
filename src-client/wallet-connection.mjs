@@ -56,8 +56,19 @@ const projectId = import.meta.env.VITE_REOWN_PROJECT_ID;
 const networks = [base, baseSepolia, polygon, polygonAmoy];
 const customRpcUrls = buildCustomRpcUrls();
 
+/**
+ * @type {EthersAdapter|undefined}
+ */
 let ethersAdapter;
+
+/**
+ * @type {AppKit|undefined}
+ */
 let appKit;
+
+/**
+ * @type {boolean}
+ */
 let isAppKitDecorated = false;
 
 /**
