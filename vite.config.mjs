@@ -31,7 +31,7 @@ export default defineConfig({
             output: {
                 entryFileNames: 'bundle.js',
                 chunkFileNames: '[name]-[hash].js',
-                assetFileNames: '[name]-[hash].[ext]'
+                assetFileNames: '[name]-[hash][extname]'
             }
         }
     }
