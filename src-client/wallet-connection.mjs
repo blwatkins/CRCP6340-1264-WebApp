@@ -18,11 +18,12 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import { createAppKit } from '@reown/appkit';
+import { createAppKit, AppKit } from '@reown/appkit';
 import { base, baseSepolia, polygon, polygonAmoy } from '@reown/appkit/networks';
 import { EthersAdapter } from '@reown/appkit-adapter-ethers';
 
 import { StringUtility } from '../src-shared/string-utility.mjs';
+import {ErrorUtility} from "../src-shared/error-utility.mjs";
 
 function getRpcUrl(envVar, defaultUrl) {
     const url = import.meta.env[envVar];
@@ -59,6 +60,9 @@ let ethersAdapter;
 let appKit;
 let isAppKitDecorated = false;
 
+/**
+ * @return {EthersAdapter}
+ */
 function buildEthersAdapter() {
     if (ethersAdapter) {
         console.debug('Wallet Connection - EthersAdapter Connected.');
@@ -66,9 +70,12 @@ function buildEthersAdapter() {
     }
 
     console.debug('Wallet Connection - Building EthersAdapter.');
-    return new EthersAdapter();
+    return ethersAdapter = new EthersAdapter();
 }
 
+/**
+ * @return {AppKit|undefined}
+ */
 function buildAppKit() {
     if (appKit) {
         console.debug('Wallet Connection - AppKit Connected.');
@@ -81,7 +88,7 @@ function buildAppKit() {
     }
 
     console.debug('Wallet Connection - Building AppKit.');
-    return createAppKit({
+    return appKit = createAppKit({
         adapters: [ethersAdapter],
         networks: networks,
         projectId: projectId,
@@ -144,8 +151,8 @@ export function initAppKit() {
             decorateAppKit();
             return appKit;
         }
-    } catch {
-        console.error('Wallet Connection Initialization Error');
+    } catch (error) {
+        console.error(ErrorUtility.buildErrorMessage('Wallet Connection Initialization Error', error));
     }
 
     return undefined;
