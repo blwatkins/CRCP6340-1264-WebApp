@@ -36,15 +36,15 @@
     "start": "dotenvx run -- node src/main.mjs"
   },
   "dependencies": {
-    "@dotenvx/dotenvx": "^2.0.0",
+    "@dotenvx/dotenvx": "^2.17.1",
     "@ethersproject/sha2": "^5.8.0",
-    "@reown/appkit": "^1.8.21",
-    "@reown/appkit-adapter-ethers": "^1.8.21",
+    "@reown/appkit": "^1.8.22",
+    "@reown/appkit-adapter-ethers": "^1.8.22",
     "ejs": "^6.0.1",
     "ethers": "^6.17.0",
     "express": "^5.2.1",
-    "express-rate-limit": "^8.5.2",
-    "mysql2": "^3.22.5",
+    "express-rate-limit": "^8.6.0",
+    "mysql2": "^3.23.1",
     "nodemailer": "^9.0.3",
     "sequelize": "^6.37.8"
   },
